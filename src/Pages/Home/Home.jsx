@@ -15,7 +15,6 @@ import { Search, MapPin, Calendar as CalendarIcon, Users } from 'lucide-react';
 // Local Assets
 import vid1 from '../../assets/vid1.mp4';
 
-
 const customFontStyle = {
   fontFamily: "'Neue Montreal Regular', sans-serif",
   fontWeight: 600,
@@ -47,7 +46,7 @@ const Home = () => {
   };
 
   return (
-    <div className="relative h-screen w-full flex items-center justify-center overflow-hidden">
+    <div className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden">
       {/* Video Background */}
       <video
         src={vid1}
@@ -62,41 +61,50 @@ const Home = () => {
 
       <div className="relative z-20 w-full max-w-6xl px-4 flex flex-col items-center">
         {/* Hero Text */}
-        <div  className="text-center text-white mt-20">
-          <div style={customFontStyle2} className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+        <div className="text-center text-white mt-10 md:mt-20 w-full">
+          <div 
+            style={customFontStyle2} 
+            className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-medium mb-4"
+          >
             Travel More. Worry Less.
           </div>
-          <h1 style={customFontStyle} className="text-5xl md:text-7xl font-bold leading-tight">
+          <h1 
+            style={customFontStyle} 
+            className="text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-bold leading-tight px-4"
+          >
             Explore the World, One <br /> Journey at a Time.
           </h1>
-          <p  style={customFontStyle2} className="mt-4 max-w-2xl mx-auto text-lg text-white/80">
+          <p 
+            style={customFontStyle2} 
+            className="mt-4 max-w-2xl mx-auto text-base md:text-lg text-white/80 px-4"
+          >
             Our travel agency offers personalized, hassle-free travel experiences, tailored to meet your unique preferences and needs.
           </p>
         </div>
 
         {/* Search Card - Replicated from the image */}
-        <Card className="w-full max-w-4xl mt-20 bg-white/95 backdrop-blur-lg p-2.5 rounded-2xl shadow-xl border-none">
-          <div className="flex items-center justify-between bg-white p-4 rounded-xl">
+        <Card className="w-full max-w-4xl mt-8 md:mt-12 bg-white/95 backdrop-blur-lg p-2.5 rounded-2xl shadow-xl border-none">
+          <div className="flex flex-col md:flex-row items-center justify-between bg-white p-4 rounded-xl gap-4">
             
             {/* Location Input Group */}
-            <div className="flex-1 flex items-center space-x-3 px-2">
-              <MapPin className="h-6 w-6 text-gray-400" />
-              <div className="flex flex-col">
+            <div className="flex-1 flex items-center space-x-3 px-2 w-full">
+              <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
+              <div className="flex flex-col w-full">
                 <label className="text-xs font-semibold text-gray-500">Location</label>
                 <Input 
                   placeholder="Where are you going?" 
-                  className="border-0 focus-visible:ring-0 p-0 h-auto text-md placeholder:text-gray-400" 
+                  className="border-0 focus-visible:ring-0 p-0 h-auto text-sm md:text-md placeholder:text-gray-400" 
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                 />
               </div>
             </div>
 
-            <div className="h-12 self-center border-l border-gray-200" />
+            <div className="hidden md:block h-12 self-center border-l border-gray-200 w-0.5" />
 
             {/* Check-in Date Picker Group */}
-            <div className="flex-1 flex items-center space-x-3 px-4">
-              <CalendarIcon className="h-6 w-6 text-gray-400" />
+            <div className="flex-1 flex items-center space-x-3 px-4 w-full">
+              <CalendarIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
               <div className="flex flex-col w-full">
                 <label className="text-xs font-semibold text-gray-500">Check In</label>
                 <Popover>
@@ -104,7 +112,7 @@ const Home = () => {
                     <Button
                       variant={"ghost"}
                       className={cn(
-                        "w-full justify-start text-left font-normal p-0 h-auto text-md hover:bg-transparent placeholder:text-gray-400",
+                        "w-full justify-start text-left font-normal p-0 h-auto text-sm md:text-md hover:bg-transparent placeholder:text-gray-400",
                         !checkInDate && "text-muted-foreground"
                       )}
                     >
@@ -124,11 +132,11 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="h-12 self-center border-l border-gray-200" />
+            <div className="hidden md:block h-12 self-center border-l border-gray-200 w-0.5" />
 
             {/* Check-out Date Picker Group */}
-            <div className="flex-1 flex items-center space-x-3 px-4">
-              <CalendarIcon className="h-6 w-6 text-gray-400" />
+            <div className="flex-1 flex items-center space-x-3 px-4 w-full">
+              <CalendarIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
               <div className="flex flex-col w-full">
                 <label className="text-xs font-semibold text-gray-500">Check Out</label>
                  <Popover>
@@ -136,7 +144,7 @@ const Home = () => {
                     <Button
                       variant={"ghost"}
                       className={cn(
-                        "w-full justify-start text-left font-normal p-0 h-auto text-md hover:bg-transparent",
+                        "w-full justify-start text-left font-normal p-0 h-auto text-sm md:text-md hover:bg-transparent",
                         !checkOutDate && "text-muted-foreground"
                       )}
                     >
@@ -156,19 +164,19 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="h-12 self-center border-l border-gray-200" />
+            <div className="hidden md:block h-12 self-center border-l border-gray-200 w-0.5" />
 
             {/* Participants Input Group */}
-            <div className="flex-1 flex items-center space-x-3 px-4">
-              <Users className="h-6 w-6 text-gray-400" />
-              <div className="flex flex-col">
+            <div className="flex-1 flex items-center space-x-3 px-4 w-full">
+              <Users className="h-5 w-5 text-gray-400 flex-shrink-0" />
+              <div className="flex flex-col w-full">
                 <label className="text-xs font-semibold text-gray-500">Participants</label>
                 <Input 
                   type="text" // Using text to allow placeholder
                   placeholder="Add guests" 
                   onFocus={(e) => e.target.type='number'}
                   onBlur={(e) => e.target.type='text'}
-                  className="border-0 focus-visible:ring-0 p-0 h-auto text-md placeholder:text-gray-400"
+                  className="border-0 focus-visible:ring-0 p-0 h-auto text-sm md:text-md placeholder:text-gray-400"
                   min="1"
                   value={participants}
                   onChange={(e) => setParticipants(e.target.value)}
@@ -179,10 +187,10 @@ const Home = () => {
             {/* Search Button */}
             <Button 
               size="icon" 
-              className="h-12 w-12 rounded-xl" // This will use the "bg-primary" from your CSS by default
+              className="h-12 w-12 rounded-xl flex-shrink-0" 
               onClick={handleSearch}
             >
-              <Search className="h-6 w-6" />
+              <Search className="h-5 w-5" />
             </Button>
           </div>
         </Card>

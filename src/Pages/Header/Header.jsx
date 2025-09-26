@@ -1,7 +1,7 @@
-// src/components/Header.jsx
-
 import React from 'react';
-import { Button } from '@/components/ui/button'; // Adjust path if needed
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 
 const HalvoraLogo = () => (
   <div className="flex items-center gap-2">
@@ -15,23 +15,79 @@ const HalvoraLogo = () => (
 );
 
 const Header = () => {
-  const navLinks = ["About Us", "Services", "Pricing", "Contact Us"];
+  const navigate = useNavigate();
+  const { user, logout } = useAuth(); // Get user and logout from auth context
+
+  const navLinks = [
+    { name: "About Us", path: "/about" },
+    { name: "Services", path: "/services" },
+    { name: "Pricing", path: "/pricing" },
+    { name: "Contact Us", path: "/contact" }
+  ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/'); // Redirect to home after logout
+  };
 
   return (
     <header className="fixed top-0 left-4 right-4 z-50">
       <nav className="container mx-auto px-10 py-4 mt-4 bg-black/20 backdrop-blur-sm rounded-full flex justify-between items-center">
         <HalvoraLogo />
-        
+
         <div className="hidden md:flex items-center gap-1 text-white">
-          <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white rounded-full bg-white/10">Home</Button>
+          {/* Home Button - Navigates away from the handled routes */}
+          <Button
+            variant="ghost"
+            className="text-white hover:bg-white/10 hover:text-white rounded-full"
+            onClick={() => navigate('/')}
+          >
+            Home
+          </Button>
+          {/* Dynamic Navigation Links */}
           {navLinks.map((link) => (
-            <Button key={link} variant="ghost" className="text-white hover:bg-white/10 hover:text-white rounded-full">{link}</Button>
+            <Button
+              key={link.name}
+              variant="ghost"
+              className="text-white hover:bg-white/10 hover:text-white rounded-full"
+              onClick={() => navigate(link.path)}
+            >
+              {link.name}
+            </Button>
           ))}
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white rounded-full">Logg In</Button>
-          <Button className="bg-lime-400 text-black font-bold rounded-full hover:bg-lime-500">Sign Up</Button>
+          {user ? (
+            // Show user info and logout button if logged in
+            <div className="flex items-center gap-4">
+              <span className="text-white">Hello, {user.full_name || user.email}</span>
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white/10 hover:text-white rounded-full"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </div>
+          ) : (
+            // Show login/signup buttons if not logged in
+            <>
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white/10 hover:text-white rounded-full"
+                onClick={() => navigate('/login')}
+              >
+                Log In
+              </Button>
+              <Button
+                className="bg-lime-400 text-black font-bold rounded-full hover:bg-lime-500"
+                onClick={() => navigate('/signup')}
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
       </nav>
     </header>
