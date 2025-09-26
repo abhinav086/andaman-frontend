@@ -30,7 +30,7 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white rounded-full">Log In</Button>
+          <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white rounded-full">Logg In</Button>
           <Button className="bg-lime-400 text-black font-bold rounded-full hover:bg-lime-500">Sign Up</Button>
         </div>
       </nav>
