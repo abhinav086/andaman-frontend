@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on app load
     const token = localStorage.getItem('accessToken');
     const userData = localStorage.getItem('user');
     
@@ -24,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       try {
         setUser(JSON.parse(userData));
       } catch (error) {
-        console.error('Error parsing user ', error);
+        console.error('Error parsing user data:', error);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');

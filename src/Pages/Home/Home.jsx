@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import Home2 from './Home2';
 
 // Shadcn UI & Lucide Icons
 import { Card } from '@/components/ui/card';
@@ -46,6 +47,8 @@ const Home = () => {
   };
 
   return (
+    <>
+   
     <div className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden">
       {/* Video Background */}
       <video
@@ -195,7 +198,11 @@ const Home = () => {
           </div>
         </Card>
       </div>
+    
     </div>
+
+      <Home2 />
+       </>
   );
 };
 

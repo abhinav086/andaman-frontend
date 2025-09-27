@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext'; // Import useAuth
+import { useAuth } from '../../context/AuthContext';
 
 const HalvoraLogo = () => (
   <div className="flex items-center gap-2">
@@ -16,7 +16,7 @@ const HalvoraLogo = () => (
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // Get user and logout from auth context
+  const { user, logout } = useAuth();
 
   const navLinks = [
     { name: "About Us", path: "/about" },
@@ -27,8 +27,11 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/'); // Redirect to home after logout
+    navigate('/');
   };
+
+  // Check if user is admin
+  const isAdmin = user?.role === 'admin';
 
   return (
     <header className="fixed top-0 left-4 right-4 z-50">
@@ -36,7 +39,6 @@ const Header = () => {
         <HalvoraLogo />
 
         <div className="hidden md:flex items-center gap-1 text-white">
-          {/* Home Button - Navigates away from the handled routes */}
           <Button
             variant="ghost"
             className="text-white hover:bg-white/10 hover:text-white rounded-full"
@@ -44,7 +46,6 @@ const Header = () => {
           >
             Home
           </Button>
-          {/* Dynamic Navigation Links */}
           {navLinks.map((link) => (
             <Button
               key={link.name}
@@ -55,11 +56,20 @@ const Header = () => {
               {link.name}
             </Button>
           ))}
+          {/* Show Admin Panel only for admin users */}
+          {isAdmin && (
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/10 hover:text-white rounded-full"
+              onClick={() => navigate('/admin')}
+            >
+              Admin Panel
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center gap-4">
           {user ? (
-            // Show user info and logout button if logged in
             <div className="flex items-center gap-4">
               <span className="text-white">Hello, {user.full_name || user.email}</span>
               <Button
@@ -71,7 +81,6 @@ const Header = () => {
               </Button>
             </div>
           ) : (
-            // Show login/signup buttons if not logged in
             <>
               <Button
                 variant="ghost"
