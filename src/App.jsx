@@ -14,6 +14,7 @@ import ContactUs from "./Pages/Header/ContactUs";
 import AdminPanel from "./admin/AdminPanel";
 import { Hotels } from "./admin";
 import AdminManagement from "./admin/AdminManagement";
+import UserManagement from "./admin/UserManagement";
 
 // Create a wrapper component to access location
 function AppContent() {
@@ -38,6 +39,7 @@ function AppContent() {
           <Route path="/admin" element={<AdminPanel/>} />
           <Route path="/admin-hotels" element={<Hotels/>}/>
           <Route path="/admin-management" element={<AdminManagement/>}/>
+          <Route path="/admin-users" element={<UserManagement/>}/>
           
     
         </Routes>

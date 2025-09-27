@@ -256,18 +256,20 @@ const Hotels = () => {
       // Sanitize the editing hotel data
       const sanitizedData = sanitizeFormData(editingHotel);
       
-      // Add text fields
+      // Add text fields (excluding photos and arrays)
       Object.keys(sanitizedData).forEach(key => {
         if (key === 'amenities' || key === 'room_types') {
           // Add array fields as JSON strings
           formData.append(key, JSON.stringify(sanitizedData[key] || []));
-        } else if (key === 'photos') {
-          // Handle existing photos separately
-          formData.append('existing_photos', JSON.stringify(sanitizedData[key] || []));
-        } else {
+        } else if (key !== 'photos') {
+          // Skip photos - handle separately
           formData.append(key, sanitizedData[key]);
         }
       });
+      
+      // Handle existing photos - send the current photos array (after any removals)
+      const remainingPhotos = editingHotel.photos || [];
+      formData.append('existing_photos', JSON.stringify(remainingPhotos));
       
       // Add new photos
       editPhotos.forEach(photo => {
