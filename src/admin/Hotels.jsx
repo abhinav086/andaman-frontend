@@ -376,7 +376,7 @@ const Hotels = () => {
                   {apiError}
                 </div>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <Label htmlFor="name">Hotel Name *</Label>
                   <Input
@@ -508,7 +508,7 @@ const Hotels = () => {
                     type="url"
                     value={newHotel.website_url}
                     onChange={handleInputChange}
-                    placeholder="https://example.com"
+                    placeholder="https://example.com  "
                   />
                 </div>
                 
@@ -520,7 +520,7 @@ const Hotels = () => {
                     type="url"
                     value={newHotel.booking_link}
                     onChange={handleInputChange}
-                    placeholder="https://booking.example.com"
+                    placeholder="https://booking.example.com  "
                   />
                 </div>
                 
@@ -546,7 +546,7 @@ const Hotels = () => {
                   />
                 </div>
                 
-                <div className="md:col-span-2">
+                <div>
                   <Label htmlFor="description">Description</Label>
                   <Textarea
                     id="description"
@@ -557,7 +557,7 @@ const Hotels = () => {
                   />
                 </div>
                 
-                <div className="md:col-span-2">
+                <div>
                   <Label htmlFor="amenities">Amenities (comma separated)</Label>
                   <Input
                     id="amenities"
@@ -571,7 +571,7 @@ const Hotels = () => {
                   />
                 </div>
                 
-                <div className="md:col-span-2">
+                <div>
                   <Label htmlFor="room_types">Room Types (comma separated)</Label>
                   <Input
                     id="room_types"
@@ -585,7 +585,7 @@ const Hotels = () => {
                   />
                 </div>
                 
-                <div className="md:col-span-2">
+                <div>
                   <Label htmlFor="photos">Photos</Label>
                   <div className="flex items-center gap-2">
                     <Input
@@ -642,7 +642,8 @@ const Hotels = () => {
       )}
       
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Updated Grid for Responsive Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {hotels.map((hotel) => (
             <Card key={hotel.hotel_id} className="overflow-hidden flex flex-col">
               <div className="relative">
@@ -721,301 +722,351 @@ const Hotels = () => {
         </div>
       </CardContent>
       
-      {/* Edit Hotel Dialog */}
+      {/* Edit Hotel Dialog - Responsive */}
+     {/* Edit Hotel Dialog - Mobile Responsive */}
       {editingHotel && (
         <Dialog open={!!editingHotel} onOpenChange={() => setEditingHotel(null)}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="w-[95vw] max-w-2xl h-[95vh] max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0">
+            <DialogHeader className="p-4 sm:p-6 pb-2 sm:pb-4 border-b shrink-0">
               <DialogTitle>Edit Hotel</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleUpdateHotel} className="space-y-4">
-              {apiError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
-                  {apiError}
-                </div>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-name">Hotel Name</Label>
-                  <Input
-                    id="edit-name"
-                    name="name"
-                    value={editingHotel.name || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
+            
+            {/* Scrollable form content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 pt-2 sm:pt-4">
+              <form onSubmit={handleUpdateHotel} className="space-y-4">
+                {apiError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
+                    {apiError}
+                  </div>
+                )}
                 
-                <div>
-                  <Label htmlFor="edit-city">City</Label>
-                  <Input
-                    id="edit-city"
-                    name="city"
-                    value={editingHotel.city || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-country">Country</Label>
-                  <Input
-                    id="edit-country"
-                    name="country"
-                    value={editingHotel.country || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-address">Address</Label>
-                  <Input
-                    id="edit-address"
-                    name="address"
-                    value={editingHotel.address || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-zip_code">ZIP Code</Label>
-                  <Input
-                    id="edit-zip_code"
-                    name="zip_code"
-                    value={editingHotel.zip_code || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-star_rating">Star Rating</Label>
-                  <Select
-                    name="star_rating"
-                    value={editingHotel.star_rating?.toString() || '3'}
-                    onValueChange={(value) => setEditingHotel(prev => ({...prev, star_rating: parseInt(value)}))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5].map(rating => (
-                        <SelectItem key={rating} value={rating.toString()}>{rating} Star{rating > 1 ? 's' : ''}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-latitude">Latitude</Label>
-                  <Input
-                    id="edit-latitude"
-                    name="latitude"
-                    type="number"
-                    step="any"
-                    value={editingHotel.latitude || ''}
-                    onChange={handleEditInputChange}
-                    placeholder="e.g. 40.7128"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-longitude">Longitude</Label>
-                  <Input
-                    id="edit-longitude"
-                    name="longitude"
-                    type="number"
-                    step="any"
-                    value={editingHotel.longitude || ''}
-                    onChange={handleEditInputChange}
-                    placeholder="e.g. -74.0060"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-contact_phone">Phone</Label>
-                  <Input
-                    id="edit-contact_phone"
-                    name="contact_phone"
-                    value={editingHotel.contact_phone || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-contact_email">Email</Label>
-                  <Input
-                    id="edit-contact_email"
-                    name="contact_email"
-                    type="email"
-                    value={editingHotel.contact_email || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-website_url">Website</Label>
-                  <Input
-                    id="edit-website_url"
-                    name="website_url"
-                    type="url"
-                    value={editingHotel.website_url || ''}
-                    onChange={handleEditInputChange}
-                    placeholder="https://example.com"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-booking_link">Booking Link</Label>
-                  <Input
-                    id="edit-booking_link"
-                    name="booking_link"
-                    type="url"
-                    value={editingHotel.booking_link || ''}
-                    onChange={handleEditInputChange}
-                    placeholder="https://booking.example.com"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-check_in_time">Check-in Time</Label>
-                  <Input
-                    id="edit-check_in_time"
-                    name="check_in_time"
-                    type="time"
-                    value={editingHotel.check_in_time || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="edit-check_out_time">Check-out Time</Label>
-                  <Input
-                    id="edit-check_out_time"
-                    name="check_out_time"
-                    type="time"
-                    value={editingHotel.check_out_time || ''}
-                    onChange={handleEditInputChange}
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <Label htmlFor="edit-description">Description</Label>
-                  <Textarea
-                    id="edit-description"
-                    name="description"
-                    value={editingHotel.description || ''}
-                    onChange={handleEditInputChange}
-                    rows={3}
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <Label htmlFor="edit-amenities">Amenities (comma separated)</Label>
-                  <Input
-                    id="edit-amenities"
-                    name="amenities"
-                    value={editingHotel.amenities?.join(', ') || ''}
-                    onChange={(e) => setEditingHotel(prev => ({
-                      ...prev,
-                      amenities: e.target.value.split(',').map(item => item.trim()).filter(item => item)
-                    }))}
-                    placeholder="WiFi, Pool, Gym, etc."
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <Label htmlFor="edit-room_types">Room Types (comma separated)</Label>
-                  <Input
-                    id="edit-room_types"
-                    name="room_types"
-                    value={editingHotel.room_types?.join(', ') || ''}
-                    onChange={(e) => setEditingHotel(prev => ({
-                      ...prev,
-                      room_types: e.target.value.split(',').map(item => item.trim()).filter(item => item)
-                    }))}
-                    placeholder="Standard, Deluxe, Suite, etc."
-                  />
-                </div>
-                
-                <div className="md:col-span-2">
-                  <Label htmlFor="edit-photos">Add Photos</Label>
-                  <div className="flex items-center gap-2">
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label htmlFor="edit-name">Hotel Name</Label>
                     <Input
-                      id="edit-photos"
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={handleEditFileChange}
+                      id="edit-name"
+                      name="name"
+                      value={editingHotel.name || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
                     />
-                    <Button type="button" variant="outline" size="sm">
-                      <Upload className="h-4 w-4" />
-                    </Button>
                   </div>
                   
-                  {(editPreviewPhotos.length > 0 || (editingHotel.photos && editingHotel.photos.length > 0)) && (
-                    <div className="mt-2">
-                      {/* Current Photos */}
-                      {editingHotel.photos && editingHotel.photos.length > 0 && (
-                        <div className="mb-3">
-                          <p className="text-sm text-gray-600 mb-2">Current Photos:</p>
-                          <div className="grid grid-cols-3 gap-2">
-                            {editingHotel.photos.map((photo, index) => (
-                              <div key={`existing-${index}`} className="relative group">
-                                <img 
-                                  src={photo} 
-                                  alt={`Existing ${index}`} 
-                                  className="w-full h-24 object-cover rounded"
-                                />
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant="destructive"
-                                  className="absolute top-1 right-1 h-6 w-6 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                  onClick={() => removeExistingPhoto(index)}
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* New Photos Preview */}
-                      {editPreviewPhotos.length > 0 && (
-                        <div>
-                          <p className="text-sm text-gray-600 mb-2">New Photos to Add:</p>
-                          <div className="grid grid-cols-3 gap-2">
-                            {editPreviewPhotos.map((photo, index) => (
-                              <div key={`new-${index}`} className="relative group">
-                                <img 
-                                  src={photo} 
-                                  alt={`New Preview ${index}`} 
-                                  className="w-full h-24 object-cover rounded border-2 border-green-200"
-                                />
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant="destructive"
-                                  className="absolute top-1 right-1 h-6 w-6 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                  onClick={() => removePreview(index, true)}
-                                >
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-city">City</Label>
+                      <Input
+                        id="edit-city"
+                        name="city"
+                        value={editingHotel.city || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
                     </div>
-                  )}
+                    
+                    <div>
+                      <Label htmlFor="edit-country">Country</Label>
+                      <Input
+                        id="edit-country"
+                        name="country"
+                        value={editingHotel.country || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-address">Address</Label>
+                    <Input
+                      id="edit-address"
+                      name="address"
+                      value={editingHotel.address || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-zip_code">ZIP Code</Label>
+                      <Input
+                        id="edit-zip_code"
+                        name="zip_code"
+                        value={editingHotel.zip_code || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit-star_rating">Star Rating</Label>
+                      <Select
+                        name="star_rating"
+                        value={editingHotel.star_rating?.toString() || '3'}
+                        onValueChange={(value) => setEditingHotel(prev => ({...prev, star_rating: parseInt(value)}))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5].map(rating => (
+                            <SelectItem key={rating} value={rating.toString()}>{rating} Star{rating > 1 ? 's' : ''}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-latitude">Latitude</Label>
+                      <Input
+                        id="edit-latitude"
+                        name="latitude"
+                        type="number"
+                        step="any"
+                        value={editingHotel.latitude || ''}
+                        onChange={handleEditInputChange}
+                        placeholder="e.g. 40.7128"
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit-longitude">Longitude</Label>
+                      <Input
+                        id="edit-longitude"
+                        name="longitude"
+                        type="number"
+                        step="any"
+                        value={editingHotel.longitude || ''}
+                        onChange={handleEditInputChange}
+                        placeholder="e.g. -74.0060"
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-contact_phone">Phone</Label>
+                      <Input
+                        id="edit-contact_phone"
+                        name="contact_phone"
+                        type="tel"
+                        value={editingHotel.contact_phone || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit-contact_email">Email</Label>
+                      <Input
+                        id="edit-contact_email"
+                        name="contact_email"
+                        type="email"
+                        value={editingHotel.contact_email || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-website_url">Website</Label>
+                    <Input
+                      id="edit-website_url"
+                      name="website_url"
+                      type="url"
+                      value={editingHotel.website_url || ''}
+                      onChange={handleEditInputChange}
+                      placeholder="https://example.com"
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-booking_link">Booking Link</Label>
+                    <Input
+                      id="edit-booking_link"
+                      name="booking_link"
+                      type="url"
+                      value={editingHotel.booking_link || ''}
+                      onChange={handleEditInputChange}
+                      placeholder="https://booking.example.com"
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-check_in_time">Check-in Time</Label>
+                      <Input
+                        id="edit-check_in_time"
+                        name="check_in_time"
+                        type="time"
+                        value={editingHotel.check_in_time || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit-check_out_time">Check-out Time</Label>
+                      <Input
+                        id="edit-check_out_time"
+                        name="check_out_time"
+                        type="time"
+                        value={editingHotel.check_out_time || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-description">Description</Label>
+                    <Textarea
+                      id="edit-description"
+                      name="description"
+                      value={editingHotel.description || ''}
+                      onChange={handleEditInputChange}
+                      rows={3}
+                      className="w-full resize-none"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-amenities">Amenities (comma separated)</Label>
+                    <Input
+                      id="edit-amenities"
+                      name="amenities"
+                      value={editingHotel.amenities?.join(', ') || ''}
+                      onChange={(e) => setEditingHotel(prev => ({
+                        ...prev,
+                        amenities: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                      }))}
+                      placeholder="WiFi, Pool, Gym, etc."
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-room_types">Room Types (comma separated)</Label>
+                    <Input
+                      id="edit-room_types"
+                      name="room_types"
+                      value={editingHotel.room_types?.join(', ') || ''}
+                      onChange={(e) => setEditingHotel(prev => ({
+                        ...prev,
+                        room_types: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                      }))}
+                      placeholder="Standard, Deluxe, Suite, etc."
+                      className="w-full"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="edit-photos">Add Photos</Label>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <Input
+                        id="edit-photos"
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleEditFileChange}
+                        className="flex-1"
+                      />
+                      <Button type="button" variant="outline" size="sm" className="w-full sm:w-auto">
+                        <Upload className="h-4 w-4 mr-2 sm:mr-0" />
+                        <span className="sm:hidden">Upload Photos</span>
+                      </Button>
+                    </div>
+                    
+                    {(editPreviewPhotos.length > 0 || (editingHotel.photos && editingHotel.photos.length > 0)) && (
+                      <div className="mt-3 space-y-4">
+                        {/* Current Photos */}
+                        {editingHotel.photos && editingHotel.photos.length > 0 && (
+                          <div>
+                            <p className="text-sm text-gray-600 mb-2 font-medium">Current Photos:</p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                              {editingHotel.photos.map((photo, index) => (
+                                <div key={`existing-${index}`} className="relative group">
+                                  <img 
+                                    src={photo} 
+                                    alt={`Existing ${index}`} 
+                                    className="w-full h-20 sm:h-24 object-cover rounded border"
+                                  />
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="destructive"
+                                    className="absolute top-1 right-1 h-6 w-6 p-1 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                                    onClick={() => removeExistingPhoto(index)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* New Photos Preview */}
+                        {editPreviewPhotos.length > 0 && (
+                          <div>
+                            <p className="text-sm text-gray-600 mb-2 font-medium">New Photos to Add:</p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                              {editPreviewPhotos.map((photo, index) => (
+                                <div key={`new-${index}`} className="relative group">
+                                  <img 
+                                    src={photo} 
+                                    alt={`New Preview ${index}`} 
+                                    className="w-full h-20 sm:h-24 object-cover rounded border-2 border-green-200"
+                                  />
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="destructive"
+                                    className="absolute top-1 right-1 h-6 w-6 p-1 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                                    onClick={() => removePreview(index, true)}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex justify-end gap-2 pt-4">
-                <Button type="submit" className="bg-green-600 hover:bg-green-700">
+              </form>
+            </div>
+            
+            {/* Fixed footer with action buttons */}
+            <div className="p-4 sm:p-6 pt-2 sm:pt-4 border-t bg-white shrink-0">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-end">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setEditingHotel(null)}
+                  className="w-full sm:w-auto order-2 sm:order-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="bg-green-600 hover:bg-green-700 w-full sm:w-auto order-1 sm:order-2"
+                  onClick={handleUpdateHotel}
+                >
                   Update Hotel
                 </Button>
               </div>
-            </form>
+            </div>
           </DialogContent>
         </Dialog>
       )}

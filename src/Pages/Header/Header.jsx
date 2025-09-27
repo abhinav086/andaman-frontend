@@ -1,22 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import logo from '../../assets/logomain.png'; // Import the logo image
+
+// Hamburger Icon Component
+const HamburgerIcon = ({ isOpen, onClick }) => (
+  <button
+    className="md:hidden p-2 text-white focus:outline-none z-50 relative"
+    onClick={onClick}
+    aria-label={isOpen ? "Close menu" : "Open menu"}
+  >
+    {isOpen ? (
+      <svg
+        className="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M6 18L18 6M6 6l12 12"
+        ></path>
+      </svg>
+    ) : (
+      <svg
+        className="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        ></path>
+      </svg>
+    )}
+  </button>
+);
 
 const HalvoraLogo = () => (
   <div className="flex items-center gap-2">
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M16 0L32 16L16 32L0 16L16 0Z" fill="#A8FF35"/>
-      <path d="M16 4L28 16L16 28L4 16L16 4Z" fill="#1A1A1A"/>
-      <path d="M16 8L24 16L16 24L8 16L16 8Z" fill="#A8FF35"/>
-    </svg>
-    <span className="text-xl font-bold text-white">Make Andaman Trip</span>
+    {/* Replaced SVG with image */}
+    <img 
+      src={logo} 
+      alt="Make Andaman Trip Logo" 
+      className="w-8 h-8 sm:w-10 sm:h-10" 
+    />
+    <span className="text-xl font-bold text-white text-base sm:text-xl whitespace-nowrap">
+      Make Andaman Trip
+    </span>
   </div>
 );
 
 const Header = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
     { name: "About Us", path: "/about" },
@@ -28,21 +74,37 @@ const Header = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+    setIsMobileMenuOpen(false);
   };
 
-  // Check if user is admin
+  const handleNavLinkClick = (path) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
   const isAdmin = user?.role === 'admin';
 
   return (
-    <header className="fixed top-0 left-4 right-4 z-50">
-      <nav className="container mx-auto px-10 py-4 mt-4 bg-black/20 backdrop-blur-sm rounded-full flex justify-between items-center">
+    <header className="fixed top-0 left-0 right-0 z-50 px-4">
+      <nav className="container mx-auto px-4 py-3 mt-4 bg-black/20 backdrop-blur-sm rounded-full flex justify-between items-center relative">
         <HalvoraLogo />
 
+        {/* Mobile menu controls and user greeting */}
+        <div className="flex items-center gap-2 md:hidden">
+          {user && (
+            <span className="text-white text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]">
+              Hello, {user.full_name || user.email}
+            </span>
+          )}
+          <HamburgerIcon isOpen={isMobileMenuOpen} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
+        </div>
+
+        {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-1 text-white">
           <Button
             variant="ghost"
             className="text-white hover:bg-white/10 hover:text-white rounded-full"
-            onClick={() => navigate('/')}
+            onClick={() => handleNavLinkClick('/')}
           >
             Home
           </Button>
@@ -51,27 +113,27 @@ const Header = () => {
               key={link.name}
               variant="ghost"
               className="text-white hover:bg-white/10 hover:text-white rounded-full"
-              onClick={() => navigate(link.path)}
+              onClick={() => handleNavLinkClick(link.path)}
             >
               {link.name}
             </Button>
           ))}
-          {/* Show Admin Panel only for admin users */}
           {isAdmin && (
             <Button
               variant="ghost"
               className="text-white hover:bg-white/10 hover:text-white rounded-full"
-              onClick={() => navigate('/admin')}
+              onClick={() => handleNavLinkClick('/admin')}
             >
               Admin Panel
             </Button>
           )}
         </div>
 
-        <div className="flex items-center gap-4">
+        {/* Desktop Auth Buttons */}
+        <div className="hidden md:flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-4">
-              <span className="text-white">Hello, {user.full_name || user.email}</span>
+              <span className="text-white whitespace-nowrap">Hello, {user.full_name || user.email}</span>
               <Button
                 variant="ghost"
                 className="text-white hover:bg-white/10 hover:text-white rounded-full"
@@ -85,19 +147,76 @@ const Header = () => {
               <Button
                 variant="ghost"
                 className="text-white hover:bg-white/10 hover:text-white rounded-full"
-                onClick={() => navigate('/login')}
+                onClick={() => handleNavLinkClick('/login')}
               >
                 Log In
               </Button>
               <Button
                 className="bg-lime-400 text-black font-bold rounded-full hover:bg-lime-500"
-                onClick={() => navigate('/signup')}
+                onClick={() => handleNavLinkClick('/signup')}
               >
                 Sign Up
               </Button>
             </>
           )}
         </div>
+
+        {/* Mobile Menu - shown when isMobileMenuOpen is true */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 mt-2 bg-black/90 backdrop-blur-md rounded-b-lg shadow-lg py-2 flex flex-col items-center gap-2 z-40">
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/10 hover:text-white w-full rounded-none"
+              onClick={() => handleNavLinkClick('/')}
+            >
+              Home
+            </Button>
+            {navLinks.map((link) => (
+              <Button
+                key={link.name}
+                variant="ghost"
+                className="text-white hover:bg-white/10 hover:text-white w-full rounded-none"
+                onClick={() => handleNavLinkClick(link.path)}
+              >
+                {link.name}
+              </Button>
+            ))}
+            {isAdmin && (
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white/10 hover:text-white w-full rounded-none"
+                onClick={() => handleNavLinkClick('/admin')}
+              >
+                Admin Panel
+              </Button>
+            )}
+            {!user ? (
+              <>
+                <Button
+                  variant="ghost"
+                  className="text-white hover:bg-white/10 hover:text-white w-full rounded-none"
+                  onClick={() => handleNavLinkClick('/login')}
+                >
+                  Log In
+                </Button>
+                <Button
+                  className="bg-lime-400 text-black font-bold w-full rounded-none hover:bg-lime-500"
+                  onClick={() => handleNavLinkClick('/signup')}
+                >
+                  Sign Up
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-white/10 hover:text-white w-full rounded-none"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            )}
+          </div>
+        )}
       </nav>
     </header>
   );

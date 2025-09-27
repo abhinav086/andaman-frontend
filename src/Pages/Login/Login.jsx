@@ -25,21 +25,21 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
+
     const result = await login(email, password);
     if (result.success) {
-      navigate("/"); // This might be causing the blank page if Home component has issues
+      navigate("/");
     } else {
       setError(result.message);
     }
   };
 
   return (
-    <div className="flex h-screen bg-white">
-      {/* Left Side - Image + Quote */}
-      <div className="w-1/2 relative overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-white">
+      {/* Left Side - Image + Quote (Hidden on mobile, visible on medium screens and up) */}
+      <div className="hidden md:block md:w-1/2 relative overflow-hidden">
         <img
-          src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWNmaXlyeWR6Y2VtcGowY3k0ZThrYWlzZTA1eG1rYjZhM2M2cTA4OCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/aPjiWa9dUtBC/giphy.gif  "
+          src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWNmaXlyeWR6Y2VtcGowY3k0ZThrYWlzZTA1eG1rYjZhM2M2cTA4OCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/aPjiWa9dUtBC/giphy.gif"
           alt="Traveler in Andaman"
           className="h-full w-full object-cover"
         />
@@ -52,9 +52,9 @@ export default function Login() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-1/2 flex items-center justify-center p-8">
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader>
+      <div className="w-full md:w-1/2 flex items-center justify-center p-4 sm:p-8">
+        <Card className="w-full max-w-sm mx-auto shadow-lg"> {/* Adjusted max-w-md to max-w-sm for better mobile fit */}
+          <CardHeader className="text-center"> {/* Centered header text */}
             <CardTitle className="text-2xl font-bold">Welcome back to Make Andaman Travel</CardTitle>
             <CardDescription>
               Plan your island escape with our seamless booking experience.
@@ -100,7 +100,7 @@ export default function Login() {
                     Remember me
                   </Label>
                 </div>
-                <Button variant="link" className="p-0">
+                <Button variant="link" className="p-0 text-sm"> {/* Reduced padding for link button */}
                   Forgot password?
                 </Button>
               </div>
@@ -109,7 +109,7 @@ export default function Login() {
               <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
                 Log In
               </Button>
-              <div className="relative w-full flex items-center justify-center">
+              <div className="relative w-full flex items-center justify-center my-2"> {/* Added margin to OR divider */}
                 <span className="absolute bg-white px-3 text-sm text-gray-500">OR</span>
                 <hr className="w-full border-t border-gray-300" />
               </div>
@@ -125,7 +125,7 @@ export default function Login() {
               </Button>
               <p className="text-sm text-center text-gray-600">
                 Don't have an account?{" "}
-                <Button variant="link" className="p-0" onClick={() => navigate('/signup')}>
+                <Button variant="link" className="p-0 text-sm" onClick={() => navigate('/signup')}>
                   Sign up
                 </Button>
               </p>
