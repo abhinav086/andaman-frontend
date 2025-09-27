@@ -10,7 +10,7 @@ const HalvoraLogo = () => (
       <path d="M16 4L28 16L16 28L4 16L16 4Z" fill="#1A1A1A"/>
       <path d="M16 8L24 16L16 24L8 16L16 8Z" fill="#A8FF35"/>
     </svg>
-    <span className="text-xl font-bold text-white">Andaman Travel</span>
+    <span className="text-xl font-bold text-white">Make Andaman Trip</span>
   </div>
 );
 
