@@ -1,21 +1,21 @@
-// src/admin/AdminPanel.jsx
+// src/admin/AdminPanel.jsx (Updated)
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Users, 
-  Package, 
-  BarChart3, 
+import {
+  Users,
+  Package,
+  BarChart3,
   Settings,
-  Building
-  // MapPin icon removed since Locations tab is gone
+  Building,
+  MapPin // Add MapPin for Activities
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Hotels from './Hotels';
-// Removed: import Locations from './Locations';
-import AdminManagement from './AdminManagement';   // For managing admins only
-import UserManagement from './UserManagement';     // ✅ NEW: Full user management
+import AdminActivities from './AdminActivities'; // Import the new AdminActivities component
+import AdminManagement from './AdminManagement';
+import UserManagement from './UserManagement';
 
 const AdminPanel = () => {
   const { user } = useAuth();
@@ -100,7 +100,7 @@ const AdminPanel = () => {
                     { id: 'users', label: 'User Management', icon: Users },
                     { id: 'admins', label: 'Admin Management', icon: Settings },
                     { id: 'hotels', label: 'Hotels', icon: Building },
-                    // Removed: { id: 'locations', label: 'Locations', icon: MapPin },
+                    { id: 'activities', label: 'Activities', icon: MapPin }, // Add Activities tab
                     { id: 'settings', label: 'Settings', icon: Settings },
                   ].map((item) => (
                     <Button
@@ -121,10 +121,10 @@ const AdminPanel = () => {
           {/* Main Content */}
           <div className="flex-1">
             {activeTab === 'dashboard' && renderDashboard()}
-            {activeTab === 'users' && <UserManagement />}      {/* ✅ Replaced dummy with real component */}
-            {activeTab === 'admins' && <AdminManagement />}    {/* Manages only admins (create/delete) */}
+            {activeTab === 'users' && <UserManagement />}
+            {activeTab === 'admins' && <AdminManagement />}
             {activeTab === 'hotels' && <Hotels />}
-            {/* Removed: {activeTab === 'locations' && <Locations />} */}
+            {activeTab === 'activities' && <AdminActivities />} 
             {activeTab === 'settings' && (
               <Card>
                 <CardHeader>

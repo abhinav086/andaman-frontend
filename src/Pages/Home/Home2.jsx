@@ -1,3 +1,4 @@
+// src/Pages/Home/Home2.jsx
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config/api';
 

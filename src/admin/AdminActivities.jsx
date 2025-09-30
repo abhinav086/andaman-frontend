@@ -1,9 +1,9 @@
-// src/admin/Hotels.jsx
+// src/admin/AdminActivities.jsx
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Building, Plus, Upload, X, Calendar, User, Check, XCircle, Clock, Eye, RefreshCw, AlertCircle } from 'lucide-react';
+import { Edit, Trash2, MapPin, Plus, Upload, X, Calendar, User, Check, XCircle, Clock, Eye, RefreshCw, AlertCircle, DollarSign, Star, Users as UsersIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,8 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { API_BASE_URL } from '../config/api';
 
-// Booking Details Modal Component
-const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
+// Booking Details Modal Component for Activities
+const ActivityBookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
   const [status, setStatus] = useState(booking?.booking_status || '');
   const [paymentStatus, setPaymentStatus] = useState(booking?.payment_status || '');
   const [loading, setLoading] = useState(false);
@@ -21,32 +21,31 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('accessToken');
-      
       if (!token) {
         alert('No access token found. Please login again.');
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings/hotel/${booking.booking_id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/activities/bookings/${booking.booking_id}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          booking_status: status,
+          status, // Using 'status' for booking status as per API
           payment_status: paymentStatus
         })
       });
 
       if (response.ok) {
         const result = await response.json();
-        onUpdateStatus(result.booking);
+        onUpdateStatus(result.data.booking); // Assuming API returns updated booking under `data.booking`
         onClose();
         alert('Booking status updated successfully');
       } else {
         const error = await response.json();
-        alert(`Update failed: ${error.msg || error.message || 'Unknown error'}`);
+        alert(`Update failed: ${error.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Update error:', error);
@@ -62,7 +61,7 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
     <Dialog open={!!booking} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Booking Details</DialogTitle>
+          <DialogTitle>Activity Booking Details</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -76,27 +75,29 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
             </div>
             <div>
               <Label>User</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">{booking.user_name || 'N/A'}</p>
+              <p className="text-sm bg-gray-100 p-2 rounded">{booking.full_name || booking.user_id || 'N/A'}</p>
             </div>
             <div>
-              <Label>Hotel</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">{booking.hotel_name || 'N/A'}</p>
+              <Label>Email</Label>
+              <p className="text-sm bg-gray-100 p-2 rounded">{booking.email || 'N/A'}</p>
             </div>
             <div>
-              <Label>Check-in</Label>
+              <Label>Activity</Label>
+              <p className="text-sm bg-gray-100 p-2 rounded">{booking.activity_name || 'N/A'}</p>
+            </div>
+            <div>
+              <Label>Destination</Label>
+              <p className="text-sm bg-gray-100 p-2 rounded">{booking.destination || 'N/A'}</p>
+            </div>
+            <div>
+              <Label>Activity Date</Label>
               <p className="text-sm bg-gray-100 p-2 rounded">
-                {booking.check_in_date ? new Date(booking.check_in_date).toLocaleDateString() : 'N/A'}
+                {booking.activity_date ? new Date(booking.activity_date).toLocaleDateString() : 'N/A'}
               </p>
             </div>
             <div>
-              <Label>Check-out</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">
-                {booking.check_out_date ? new Date(booking.check_out_date).toLocaleDateString() : 'N/A'}
-              </p>
-            </div>
-            <div>
-              <Label>Guests</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">{booking.num_guests || 'N/A'}</p>
+              <Label>Participants</Label>
+              <p className="text-sm bg-gray-100 p-2 rounded">{booking.participants_count || 'N/A'}</p>
             </div>
             <div>
               <Label>Amount</Label>
@@ -112,8 +113,7 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="confirmed">Confirmed</SelectItem>
                   <SelectItem value="cancelled">Cancelled</SelectItem>
-                  <SelectItem value="checked_in">Checked In</SelectItem>
-                  <SelectItem value="checked_out">Checked Out</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -131,14 +131,12 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
               </Select>
             </div>
           </div>
-          
           <div>
             <Label>Special Requests</Label>
             <p className="text-sm bg-gray-100 p-2 rounded min-h-[40px]">
               {booking.special_requests || 'None'}
             </p>
           </div>
-          
           <div className="flex justify-end space-x-2 pt-4">
             <Button variant="outline" onClick={onClose} disabled={loading}>
               Close
@@ -160,8 +158,8 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
   );
 };
 
-// Bookings Management Component
-const BookingsManagement = () => {
+// Bookings Management Component for Activities
+const ActivityBookingsManagement = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -181,10 +179,8 @@ const BookingsManagement = () => {
   const fetchBookings = async () => {
     setLoading(true);
     setApiError('');
-    
     try {
       const token = localStorage.getItem('accessToken');
-      
       if (!token) {
         setApiError('No access token found. Please login again.');
         setLoading(false);
@@ -193,23 +189,19 @@ const BookingsManagement = () => {
 
       // Build query parameters
       const params = new URLSearchParams();
-      
       if (filter !== 'all') {
         params.append('status', filter);
       }
-      
       if (paymentFilter !== 'all') {
         params.append('payment_status', paymentFilter);
       }
-      
       params.append('limit', pagination.limit.toString());
       params.append('page', pagination.page.toString());
-      
-      const url = `${API_BASE_URL}/api/bookings/hotel/all${params.toString() ? '?' + params.toString() : ''}`;
-      
-      console.log('Fetching bookings from:', url); // Debug log
+
+      const url = `${API_BASE_URL}/api/activities/bookings/admin/all${params.toString() ? '?' + params.toString() : ''}`;
+      console.log('Fetching activity bookings from:', url); // Debug log
       console.log('Using token:', token ? 'Token present' : 'No token'); // Debug log
-      
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -217,49 +209,44 @@ const BookingsManagement = () => {
           'Content-Type': 'application/json'
         }
       });
-      
+
       console.log('Response status:', response.status); // Debug log
       console.log('Response headers:', Object.fromEntries(response.headers.entries())); // Debug log
-      
+
       if (response.ok) {
         const data = await response.json();
-        console.log('Response data:', data); // Debug log
-        
-        setBookings(data.bookings || []);
-        
-        if (data.pagination) {
+        console.log('Activity bookings response ', data); // Debug log
+        setBookings(data.data.bookings || []);
+        if (data.data.pagination) {
           setPagination(prev => ({
             ...prev,
-            total: data.pagination.total || 0
+            total: data.data.pagination.total || 0
           }));
         }
-        
         setApiError('');
       } else {
         // Try to get error message from response
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        
         try {
           const errorData = await response.json();
-          errorMessage = errorData.msg || errorData.message || errorMessage;
-          console.log('Error response data:', errorData); // Debug log
+          errorMessage = errorData.message || errorMessage;
+          console.log('Activity bookings error response data:', errorData); // Debug log
         } catch (e) {
           // If response is not JSON, use the text
           try {
             const errorText = await response.text();
             errorMessage = errorText || errorMessage;
-            console.log('Error response text:', errorText); // Debug log
+            console.log('Activity bookings error response text:', errorText); // Debug log
           } catch (e2) {
             // Use default error message
-            console.log('Could not parse error response'); // Debug log
+            console.log('Could not parse activity bookings error response'); // Debug log
           }
         }
-        
-        console.error('Failed to fetch bookings:', errorMessage);
-        setApiError(`Failed to fetch bookings: ${errorMessage}`);
+        console.error('Failed to fetch activity bookings:', errorMessage);
+        setApiError(`Failed to fetch activity bookings: ${errorMessage}`);
       }
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      console.error('Error fetching activity bookings:', error);
       setApiError(`Network error: ${error.message}`);
     } finally {
       setLoading(false);
@@ -267,43 +254,37 @@ const BookingsManagement = () => {
   };
 
   const handleStatusUpdate = (updatedBooking) => {
-    setBookings(bookings.map(b => 
+    setBookings(bookings.map(b =>
       b.booking_id === updatedBooking.booking_id ? updatedBooking : b
     ));
   };
 
   const handleCancelBooking = async (bookingId) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
-    
     try {
       const token = localStorage.getItem('accessToken');
-      
       if (!token) {
         alert('No access token found. Please login again.');
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/bookings/hotel/${bookingId}/status`, {
-        method: 'PUT',
+      const response = await fetch(`${API_BASE_URL}/api/activities/bookings/${bookingId}/cancel`, {
+        method: 'PUT', // API uses PUT for cancel
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          booking_status: 'cancelled',
-          payment_status: 'refunded'
-        })
+        }
       });
 
       if (response.ok) {
         const result = await response.json();
-        setBookings(bookings.map(b => 
-          b.booking_id === bookingId ? result.booking : b
+        setBookings(bookings.map(b =>
+          b.booking_id === bookingId ? result.data.booking : b // Assuming API returns updated booking under `data.booking`
         ));
         alert('Booking cancelled successfully');
       } else {
         const error = await response.json();
-        alert(`Cancellation failed: ${error.msg || error.message || 'Unknown error'}`);
+        alert(`Cancellation failed: ${error.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Cancellation error:', error);
@@ -320,8 +301,7 @@ const BookingsManagement = () => {
       case 'confirmed': return 'default';
       case 'pending': return 'secondary';
       case 'cancelled': return 'destructive';
-      case 'checked_in': return 'default';
-      case 'checked_out': return 'outline';
+      case 'completed': return 'outline'; // Or default, depending on preference
       default: return 'outline';
     }
   };
@@ -339,7 +319,7 @@ const BookingsManagement = () => {
     return (
       <div className="flex justify-center items-center h-64">
         <RefreshCw className="h-8 w-8 animate-spin mr-2" />
-        <p>Loading bookings...</p>
+        <p>Loading activity bookings...</p>
       </div>
     );
   }
@@ -348,7 +328,7 @@ const BookingsManagement = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h3 className="text-xl font-bold">All Bookings</h3>
+          <h3 className="text-xl font-bold">All Activity Bookings</h3>
           {bookings.length > 0 && (
             <p className="text-sm text-gray-600">
               Showing {bookings.length} bookings
@@ -356,7 +336,6 @@ const BookingsManagement = () => {
             </p>
           )}
         </div>
-        
         <div className="flex flex-col sm:flex-row gap-2">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-full sm:w-40">
@@ -367,11 +346,9 @@ const BookingsManagement = () => {
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="confirmed">Confirmed</SelectItem>
               <SelectItem value="cancelled">Cancelled</SelectItem>
-              <SelectItem value="checked_in">Checked In</SelectItem>
-              <SelectItem value="checked_out">Checked Out</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
             </SelectContent>
           </Select>
-          
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue />
@@ -383,7 +360,6 @@ const BookingsManagement = () => {
               <SelectItem value="refunded">Refunded</SelectItem>
             </SelectContent>
           </Select>
-          
           <Button variant="outline" onClick={handleRetry}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -402,15 +378,15 @@ const BookingsManagement = () => {
                 <p className="text-xs text-red-500">Troubleshooting tips:</p>
                 <ul className="text-xs text-red-500 list-disc list-inside space-y-1">
                   <li>Check if you're logged in with admin privileges</li>
-                  <li>Verify the API endpoint is correct: {API_BASE_URL}/api/bookings/hotel/all</li>
+                  <li>Verify the API endpoint is correct: {API_BASE_URL}/api/activities/bookings/admin/all</li>
                   <li>Check browser console for detailed error logs</li>
                   <li>Ensure the backend server is running</li>
                   <li>Verify your access token is valid and not expired</li>
                 </ul>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleRetry}
                 className="mt-3 text-red-600 border-red-300 hover:bg-red-50"
               >
@@ -425,11 +401,11 @@ const BookingsManagement = () => {
       {!apiError && bookings.length === 0 && (
         <div className="text-center py-12">
           <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No activity bookings found</h3>
           <p className="text-gray-500">
-            {filter !== 'all' || paymentFilter !== 'all' 
-              ? 'No bookings match your current filters.' 
-              : 'No bookings have been made yet.'}
+            {filter !== 'all' || paymentFilter !== 'all'
+              ? 'No activity bookings match your current filters.'
+              : 'No activity bookings have been made yet.'}
           </p>
         </div>
       )}
@@ -441,8 +417,8 @@ const BookingsManagement = () => {
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
-                    <h4 className="font-bold text-base">{booking.hotel_name || 'Unknown Hotel'}</h4>
-                    <p className="text-sm text-gray-600">{booking.user_name || 'Unknown User'}</p>
+                    <h4 className="font-bold text-base">{booking.activity_name || 'Unknown Activity'}</h4>
+                    <p className="text-sm text-gray-600">{booking.full_name || 'Unknown User'}</p>
                   </div>
                   <div className="flex flex-col gap-1 items-end">
                     <Badge variant={getStatusBadgeVariant(booking.booking_status)}>
@@ -455,35 +431,34 @@ const BookingsManagement = () => {
                     )}
                   </div>
                 </div>
-                
                 <div className="space-y-2">
-                  {booking.check_in_date && booking.check_out_date && (
+                  <div className="flex items-center text-sm">
+                    <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                    {booking.destination || 'N/A'}
+                  </div>
+                  {booking.activity_date && (
                     <div className="flex items-center text-sm">
                       <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                      {new Date(booking.check_in_date).toLocaleDateString()} - {new Date(booking.check_out_date).toLocaleDateString()}
+                      {new Date(booking.activity_date).toLocaleDateString()}
                     </div>
                   )}
-                  
-                  {booking.num_guests && (
+                  {booking.participants_count && (
                     <div className="flex items-center text-sm">
-                      <User className="h-4 w-4 mr-2 text-gray-500" />
-                      {booking.num_guests} {booking.num_guests === 1 ? 'Guest' : 'Guests'}
+                      <UsersIcon className="h-4 w-4 mr-2 text-gray-500" />
+                      {booking.participants_count} {booking.participants_count === 1 ? 'Participant' : 'Participants'}
                     </div>
                   )}
-                  
                   {booking.total_amount && (
                     <div className="text-sm font-semibold">₹{booking.total_amount}</div>
                   )}
-                  
                   <div className="text-xs text-gray-500">
                     ID: {booking.booking_id}
                     {booking.booking_reference && ` | Ref: ${booking.booking_reference}`}
                   </div>
                 </div>
-                
                 <div className="mt-4 flex space-x-2">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     variant="outline"
                     onClick={() => setSelectedBooking(booking)}
                     className="flex-1"
@@ -492,8 +467,8 @@ const BookingsManagement = () => {
                     View
                   </Button>
                   {booking.booking_status === 'pending' && (
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="destructive"
                       onClick={() => handleCancelBooking(booking.booking_id)}
                     >
@@ -509,8 +484,8 @@ const BookingsManagement = () => {
       )}
 
       {selectedBooking && (
-        <BookingDetailsModal 
-          booking={selectedBooking} 
+        <ActivityBookingDetailsModal
+          booking={selectedBooking}
           onClose={() => setSelectedBooking(null)}
           onUpdateStatus={handleStatusUpdate}
         />
@@ -519,60 +494,65 @@ const BookingsManagement = () => {
   );
 };
 
-const Hotels = () => {
-  const [hotels, setHotels] = useState([]);
+const AdminActivities = () => {
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [newHotel, setNewHotel] = useState({
+  const [newActivity, setNewActivity] = useState({
     name: '',
-    city: '',
-    country: '',
-    address: '',
     description: '',
-    star_rating: 3,
-    zip_code: '',
-    latitude: '',
-    longitude: '',
-    check_in_time: '',
-    check_out_time: '',
-    contact_phone: '',
-    contact_email: '',
-    website_url: '',
-    booking_link: '',
-    amenities: [],
-    room_types: []
+    destination: '',
+    duration_hours: 0,
+    duration_minutes: 0,
+    price: 0,
+    currency: 'INR',
+    max_participants: null,
+    min_age: null,
+    difficulty_level: 'easy',
+    category: '',
+    meeting_point: '',
+    safety_requirements: '',
+    cancellation_policy: '',
+    inclusions: [],
+    exclusions: [],
+    available_days: [],
+    start_time: '',
+    end_time: '',
+    booking_deadline_hours: 24,
+    availability_status: 'available'
   });
   const [errors, setErrors] = useState({});
   const [photos, setPhotos] = useState([]);
   const [previewPhotos, setPreviewPhotos] = useState([]);
-  const [editingHotel, setEditingHotel] = useState(null);
+  const [editingActivity, setEditingActivity] = useState(null);
   const [editPhotos, setEditPhotos] = useState([]);
   const [editPreviewPhotos, setEditPreviewPhotos] = useState([]);
   const [apiError, setApiError] = useState('');
-  const [activeTab, setActiveTab] = useState('hotels'); // 'hotels' or 'bookings'
+  const [activeTab, setActiveTab] = useState('activities'); // 'activities' or 'bookings'
 
   useEffect(() => {
-    if (activeTab === 'hotels') {
-      fetchHotels();
+    if (activeTab === 'activities') {
+      fetchActivities();
     }
   }, [activeTab]);
 
-  const fetchHotels = async () => {
+  const fetchActivities = async () => {
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${API_BASE_URL}/api/hotels`, {
+      const response = await fetch(`${API_BASE_URL}/api/activities`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
         const result = await response.json();
-        setHotels(result.hotels || []);
+        setActivities(result.data.activities || []);
       } else {
-        console.error('Failed to fetch hotels');
-        setApiError('Failed to fetch hotels');
+        console.error('Failed to fetch activities');
+        const errorData = await response.json();
+        setApiError(errorData.message || 'Failed to fetch activities');
       }
     } catch (error) {
-      console.error('Error fetching hotels:', error);
+      console.error('Error fetching activities:', error);
       setApiError('Network error occurred');
     } finally {
       setLoading(false);
@@ -581,7 +561,7 @@ const Hotels = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewHotel(prev => ({
+    setNewActivity(prev => ({
       ...prev,
       [name]: value
     }));
@@ -589,7 +569,7 @@ const Hotels = () => {
 
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    setEditingHotel(prev => ({
+    setEditingActivity(prev => ({
       ...prev,
       [name]: value
     }));
@@ -622,18 +602,27 @@ const Hotels = () => {
   };
 
   const removeExistingPhoto = (index) => {
-    setEditingHotel(prev => ({
+    setEditingActivity(prev => ({
       ...prev,
       photos: prev.photos?.filter((_, i) => i !== index) || []
     }));
   };
 
-  const validateHotel = () => {
+  const validateActivity = () => {
     const newErrors = {};
-    if (!newHotel.name) newErrors.name = 'Name is required';
-    if (!newHotel.city) newErrors.city = 'City is required';
-    if (!newHotel.country) newErrors.country = 'Country is required';
-    if (!newHotel.address) newErrors.address = 'Address is required';
+    const name = newActivity.name?.trim(); // Use optional chaining and trim
+    const destination = newActivity.destination?.trim();
+    const price = parseFloat(newActivity.price); // Parse price to number
+
+    if (!name || name.length < 3) {
+      newErrors.name = 'Name must be at least 3 characters long';
+    }
+    if (!destination || destination.length < 2) {
+      newErrors.destination = 'Destination must be at least 2 characters long';
+    }
+    if (isNaN(price) || price <= 0) {
+      newErrors.price = 'Price must be a positive number';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -644,66 +633,87 @@ const Hotels = () => {
     Object.keys(data).forEach(key => {
       const value = data[key];
       // Handle different field types
-      if (key === 'amenities' || key === 'room_types') {
+      if (['inclusions', 'exclusions', 'available_days']) {
         // Arrays should be preserved
-        sanitized[key] = value || [];
-      } else if (key === 'latitude' || key === 'longitude') {
-        // Only include if it's a valid number
-        if (value !== '' && value !== null && value !== undefined && !isNaN(parseFloat(value))) {
-          sanitized[key] = parseFloat(value);
+        sanitized[key] = Array.isArray(value) ? value : [];
+      } else if (['duration_hours', 'duration_minutes', 'price', 'max_participants', 'min_age', 'booking_deadline_hours']) {
+        // Numbers: only include if valid
+        if (value !== '' && value !== null && value !== undefined) {
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue)) {
+            sanitized[key] = numValue;
+          }
         }
-      } else if (key === 'website_url' || key === 'booking_link') {
+      } else if (key === 'video_url') {
         // Only include if it's a valid URL or empty
         if (value && value.trim() !== '') {
           sanitized[key] = value.trim();
         }
-      } else if (key === 'star_rating') {
-        // Ensure it's a number
-        sanitized[key] = parseInt(value) || 3;
-      } else if (value !== null && value !== undefined && value !== '') {
-        // Include non-empty values
+      } else if (typeof value === 'string') {
+        // For string fields, trim whitespace
+        sanitized[key] = value.trim();
+      } else if (value !== null && value !== undefined) {
+        // Include non-empty values of other types
         sanitized[key] = value;
       }
     });
     return sanitized;
   };
 
-  const handleAddHotel = async () => {
-    if (!validateHotel()) return;
+  const handleAddActivity = async () => {
+    if (!validateActivity()) {
+        console.error("Validation failed, errors:", errors); // Log frontend errors
+        return;
+    }
+
     try {
       const token = localStorage.getItem('accessToken');
       const formData = new FormData();
-      // Sanitize the hotel data before adding to form
-      const sanitizedData = sanitizeFormData(newHotel);
+      // Sanitize the activity data before adding to form
+      const sanitizedData = sanitizeFormData(newActivity);
+
+      console.log("Sanitized Data being sent:", sanitizedData); // Log sanitized data
+
       // Add text fields (excluding arrays for now)
       Object.keys(sanitizedData).forEach(key => {
-        if (key !== 'amenities' && key !== 'room_types') {
+        if (!['inclusions', 'exclusions', 'available_days'].includes(key)) {
           formData.append(key, sanitizedData[key]);
         }
       });
+
       // Add array fields as JSON strings
-      formData.append('amenities', JSON.stringify(sanitizedData.amenities || []));
-      formData.append('room_types', JSON.stringify(sanitizedData.room_types || []));
+      formData.append('inclusions', JSON.stringify(sanitizedData.inclusions || []));
+      formData.append('exclusions', JSON.stringify(sanitizedData.exclusions || []));
+      formData.append('available_days', JSON.stringify(sanitizedData.available_days || []));
+
       // Add photos
       photos.forEach(photo => {
         formData.append('photos', photo);
       });
-      const response = await fetch(`${API_BASE_URL}/api/hotels`, {
+
+      const response = await fetch(`${API_BASE_URL}/api/activities`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
+          // Note: Don't set Content-Type to application/json for FormData
+          // The browser will set the correct multipart/form-data content type
         },
         body: formData
       });
+
       const responseText = await response.text();
+      console.log("Server Response Status:", response.status); // Log status
+      console.log("Server Response Text:", responseText); // Log response body
+
       if (!response.ok) {
         console.error('Server Error:', response.status, responseText);
-        setApiError(`Failed to add hotel: ${response.status} - ${response.statusText}`);
+        setApiError(`Failed to add activity: ${response.status} - ${response.statusText}`);
         return;
       }
+
       try {
         const result = JSON.parse(responseText);
-        setHotels([...hotels, result.hotel]);
+        setActivities([...activities, result.data.activity]);
         resetForm();
         setApiError('');
       } catch (e) {
@@ -717,38 +727,43 @@ const Hotels = () => {
   };
 
   const resetForm = () => {
-    setNewHotel({
+    setNewActivity({
       name: '',
-      city: '',
-      country: '',
-      address: '',
       description: '',
-      star_rating: 3,
-      zip_code: '',
-      latitude: '',
-      longitude: '',
-      check_in_time: '',
-      check_out_time: '',
-      contact_phone: '',
-      contact_email: '',
-      website_url: '',
-      booking_link: '',
-      amenities: [],
-      room_types: []
+      destination: '',
+      duration_hours: 0,
+      duration_minutes: 0,
+      price: 0,
+      currency: 'INR',
+      max_participants: null,
+      min_age: null,
+      difficulty_level: 'easy',
+      category: '',
+      meeting_point: '',
+      safety_requirements: '',
+      cancellation_policy: '',
+      inclusions: [],
+      exclusions: [],
+      available_days: [],
+      start_time: '',
+      end_time: '',
+      booking_deadline_hours: 24,
+      availability_status: 'available'
     });
     setPhotos([]);
     setPreviewPhotos([]);
   };
 
-  const handleUpdateHotel = async () => {
+  const handleUpdateActivity = async () => {
     try {
       const token = localStorage.getItem('accessToken');
       const formData = new FormData();
-      // Sanitize the editing hotel data
-      const sanitizedData = sanitizeFormData(editingHotel);
+      // Sanitize the editing activity data
+      const sanitizedData = sanitizeFormData(editingActivity);
+
       // Add text fields (excluding photos and arrays)
       Object.keys(sanitizedData).forEach(key => {
-        if (key === 'amenities' || key === 'room_types') {
+        if (['inclusions', 'exclusions', 'available_days'].includes(key)) {
           // Add array fields as JSON strings
           formData.append(key, JSON.stringify(sanitizedData[key] || []));
         } else if (key !== 'photos') {
@@ -756,32 +771,37 @@ const Hotels = () => {
           formData.append(key, sanitizedData[key]);
         }
       });
+
       // Handle existing photos - send the current photos array (after any removals)
-      const remainingPhotos = editingHotel.photos || [];
+      const remainingPhotos = editingActivity.photos || [];
       formData.append('existing_photos', JSON.stringify(remainingPhotos));
+
       // Add new photos
       editPhotos.forEach(photo => {
         formData.append('photos', photo);
       });
-      const response = await fetch(`${API_BASE_URL}/api/hotels/${editingHotel.hotel_id}`, {
+
+      const response = await fetch(`${API_BASE_URL}/api/activities/${editingActivity.activity_id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
         },
         body: formData
       });
+
       const responseText = await response.text();
       if (!response.ok) {
         console.error('Update Error:', response.status, responseText);
-        setApiError(`Failed to update hotel: ${response.status} - ${response.statusText}`);
+        setApiError(`Failed to update activity: ${response.status} - ${response.statusText}`);
         return;
       }
+
       try {
         const result = JSON.parse(responseText);
-        setHotels(hotels.map(hotel => 
-          hotel.hotel_id === editingHotel.hotel_id ? result.hotel : hotel
+        setActivities(activities.map(activity =>
+          activity.activity_id === editingActivity.activity_id ? result.data.activity : activity
         ));
-        setEditingHotel(null);
+        setEditingActivity(null);
         setEditPhotos([]);
         setEditPreviewPhotos([]);
         setApiError('');
@@ -795,23 +815,25 @@ const Hotels = () => {
     }
   };
 
-  const handleDeleteHotel = async (hotelId) => {
-    if (!window.confirm('Are you sure you want to delete this hotel?')) return;
+  const handleDeleteActivity = async (activityId) => {
+    if (!window.confirm('Are you sure you want to delete this activity?')) return;
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/activities/${activityId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
+
       const responseText = await response.text();
       if (!response.ok) {
         console.error('Delete Error:', response.status, responseText);
-        setApiError(`Failed to delete hotel: ${response.status} - ${response.statusText}`);
+        setApiError(`Failed to delete activity: ${response.status} - ${response.statusText}`);
         return;
       }
-      setHotels(hotels.filter(hotel => hotel.hotel_id !== hotelId));
+
+      setActivities(activities.filter(activity => activity.activity_id !== activityId));
       setApiError('');
     } catch (error) {
       console.error('Network error:', error);
@@ -819,16 +841,44 @@ const Hotels = () => {
     }
   };
 
-  const startEdit = (hotel) => {
-    setEditingHotel({ ...hotel });
+  const startEdit = (activity) => {
+    // Create a new object with the activity data, ensuring it matches the state structure
+    // Use the initial state structure as a base to avoid undefined values
+    const activityToEdit = {
+      name: activity.name || '',
+      description: activity.description || '',
+      destination: activity.destination || '',
+      duration_hours: activity.duration_hours || 0,
+      duration_minutes: activity.duration_minutes || 0,
+      price: activity.price || 0,
+      currency: activity.currency || 'INR',
+      max_participants: activity.max_participants || null,
+      min_age: activity.min_age || null,
+      difficulty_level: activity.difficulty_level || 'easy',
+      category: activity.category || '',
+      meeting_point: activity.meeting_point || '',
+      safety_requirements: activity.safety_requirements || '',
+      cancellation_policy: activity.cancellation_policy || '',
+      inclusions: Array.isArray(activity.inclusions) ? activity.inclusions : [],
+      exclusions: Array.isArray(activity.exclusions) ? activity.exclusions : [],
+      available_days: Array.isArray(activity.available_days) ? activity.available_days : [],
+      start_time: activity.start_time || '',
+      end_time: activity.end_time || '',
+      booking_deadline_hours: activity.booking_deadline_hours || 24,
+      availability_status: activity.availability_status || 'available',
+      activity_id: activity.activity_id, // Include the ID for the update request
+      photos: Array.isArray(activity.photos) ? activity.photos : [] // Include photos array
+    };
+
+    setEditingActivity(activityToEdit);
     setEditPhotos([]);
     setEditPreviewPhotos([]);
   };
 
-  if (loading && activeTab === 'hotels') {
+  if (loading && activeTab === 'activities') {
     return (
       <div className="flex justify-center items-center h-64">
-        <p>Loading hotels...</p>
+        <p>Loading activities...</p>
       </div>
     );
   }
@@ -837,18 +887,17 @@ const Hotels = () => {
     <Card className="w-full">
       <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <CardTitle className="text-2xl">Hotel Management</CardTitle>
-          <CardDescription>Manage your hotels and bookings</CardDescription>
+          <CardTitle className="text-2xl">Activity Management</CardTitle>
+          <CardDescription>Manage your activities and bookings</CardDescription>
         </div>
-        
         {/* Tab Navigation */}
         <div className="flex space-x-2">
           <Button
-            variant={activeTab === 'hotels' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('hotels')}
+            variant={activeTab === 'activities' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('activities')}
           >
-            <Building className="mr-2 h-4 w-4" />
-            Hotels
+            <MapPin className="mr-2 h-4 w-4" />
+            Activities
           </Button>
           <Button
             variant={activeTab === 'bookings' ? 'default' : 'outline'}
@@ -859,27 +908,27 @@ const Hotels = () => {
           </Button>
         </div>
       </CardHeader>
-      
+
       {apiError && (
         <div className="mx-6 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
           {apiError}
         </div>
       )}
-      
+
       <CardContent>
-        {activeTab === 'hotels' ? (
+        {activeTab === 'activities' ? (
           <>
-            {/* Add Hotel Button */}
+            {/* Add Activity Button */}
             <div className="mb-6">
               <Dialog>
                 <DialogTrigger asChild>
                   <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Add Hotel
+                    <Plus className="mr-2 h-4 w-4" /> Add Activity
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Add New Hotel</DialogTitle>
+                    <DialogTitle>Add New Activity</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
                     {apiError && (
@@ -889,157 +938,33 @@ const Hotels = () => {
                     )}
                     <div className="grid grid-cols-1 gap-4">
                       <div>
-                        <Label htmlFor="name">Hotel Name *</Label>
+                        <Label htmlFor="name">Activity Name *</Label>
                         <Input
                           id="name"
                           name="name"
-                          value={newHotel.name}
+                          value={newActivity.name}
                           onChange={handleInputChange}
                           className={errors.name ? "border-red-500" : ""}
                         />
                         {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                       </div>
                       <div>
-                        <Label htmlFor="city">City *</Label>
+                        <Label htmlFor="destination">Destination *</Label>
                         <Input
-                          id="city"
-                          name="city"
-                          value={newHotel.city}
+                          id="destination"
+                          name="destination"
+                          value={newActivity.destination}
                           onChange={handleInputChange}
-                          className={errors.city ? "border-red-500" : ""}
+                          className={errors.destination ? "border-red-500" : ""}
                         />
-                        {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
+                        {errors.destination && <p className="text-red-500 text-sm mt-1">{errors.destination}</p>}
                       </div>
                       <div>
-                        <Label htmlFor="country">Country *</Label>
+                        <Label htmlFor="category">Category</Label>
                         <Input
-                          id="country"
-                          name="country"
-                          value={newHotel.country}
-                          onChange={handleInputChange}
-                          className={errors.country ? "border-red-500" : ""}
-                        />
-                        {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
-                      </div>
-                      <div>
-                        <Label htmlFor="address">Address *</Label>
-                        <Input
-                          id="address"
-                          name="address"
-                          value={newHotel.address}
-                          onChange={handleInputChange}
-                          className={errors.address ? "border-red-500" : ""}
-                        />
-                        {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
-                      </div>
-                      <div>
-                        <Label htmlFor="zip_code">ZIP Code</Label>
-                        <Input
-                          id="zip_code"
-                          name="zip_code"
-                          value={newHotel.zip_code}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="star_rating">Star Rating</Label>
-                        <Select
-                          name="star_rating"
-                          value={newHotel.star_rating}
-                          onValueChange={(value) => setNewHotel(prev => ({...prev, star_rating: parseInt(value)}))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[1, 2, 3, 4, 5].map(rating => (
-                              <SelectItem key={rating} value={rating.toString()}>{rating} Star{rating > 1 ? 's' : ''}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="latitude">Latitude</Label>
-                        <Input
-                          id="latitude"
-                          name="latitude"
-                          type="number"
-                          step="any"
-                          value={newHotel.latitude}
-                          onChange={handleInputChange}
-                          placeholder="e.g. 40.7128"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="longitude">Longitude</Label>
-                        <Input
-                          id="longitude"
-                          name="longitude"
-                          type="number"
-                          step="any"
-                          value={newHotel.longitude}
-                          onChange={handleInputChange}
-                          placeholder="e.g. -74.0060"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="contact_phone">Phone</Label>
-                        <Input
-                          id="contact_phone"
-                          name="contact_phone"
-                          value={newHotel.contact_phone}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="contact_email">Email</Label>
-                        <Input
-                          id="contact_email"
-                          name="contact_email"
-                          type="email"
-                          value={newHotel.contact_email}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="website_url">Website</Label>
-                        <Input
-                          id="website_url"
-                          name="website_url"
-                          type="url"
-                          value={newHotel.website_url}
-                          onChange={handleInputChange}
-                          placeholder="https://example.com"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="booking_link">Booking Link</Label>
-                        <Input
-                          id="booking_link"
-                          name="booking_link"
-                          type="url"
-                          value={newHotel.booking_link}
-                          onChange={handleInputChange}
-                          placeholder="https://booking.example.com"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="check_in_time">Check-in Time</Label>
-                        <Input
-                          id="check_in_time"
-                          name="check_in_time"
-                          type="time"
-                          value={newHotel.check_in_time}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="check_out_time">Check-out Time</Label>
-                        <Input
-                          id="check_out_time"
-                          name="check_out_time"
-                          type="time"
-                          value={newHotel.check_out_time}
+                          id="category"
+                          name="category"
+                          value={newActivity.category}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -1048,35 +973,222 @@ const Hotels = () => {
                         <Textarea
                           id="description"
                           name="description"
-                          value={newHotel.description}
+                          value={newActivity.description}
                           onChange={handleInputChange}
                           rows={3}
                         />
                       </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="duration_hours">Duration (Hours)</Label>
+                          <Input
+                            id="duration_hours"
+                            name="duration_hours"
+                            type="number"
+                            min="0"
+                            step="any"
+                            value={newActivity.duration_hours}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="duration_minutes">Duration (Minutes)</Label>
+                          <Input
+                            id="duration_minutes"
+                            name="duration_minutes"
+                            type="number"
+                            min="0"
+                            max="59"
+                            value={newActivity.duration_minutes}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="price">Price *</Label>
+                          <Input
+                            id="price"
+                            name="price"
+                            type="number"
+                            min="0"
+                            step="any"
+                            value={newActivity.price}
+                            onChange={handleInputChange}
+                            className={errors.price ? "border-red-500" : ""}
+                          />
+                          {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+                        </div>
+                        <div>
+                          <Label htmlFor="currency">Currency</Label>
+                          <Input
+                            id="currency"
+                            name="currency"
+                            value={newActivity.currency}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="max_participants">Max Participants</Label>
+                          <Input
+                            id="max_participants"
+                            name="max_participants"
+                            type="number"
+                            min="1"
+                            value={newActivity.max_participants || ''}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="min_age">Minimum Age</Label>
+                          <Input
+                            id="min_age"
+                            name="min_age"
+                            type="number"
+                            min="0"
+                            value={newActivity.min_age || ''}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="difficulty_level">Difficulty Level</Label>
+                          <Select
+                            name="difficulty_level"
+                            value={newActivity.difficulty_level}
+                            onValueChange={(value) => setNewActivity(prev => ({...prev, difficulty_level: value}))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="easy">Easy</SelectItem>
+                              <SelectItem value="moderate">Moderate</SelectItem>
+                              <SelectItem value="challenging">Challenging</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="availability_status">Availability Status</Label>
+                          <Select
+                            name="availability_status"
+                            value={newActivity.availability_status}
+                            onValueChange={(value) => setNewActivity(prev => ({...prev, availability_status: value}))}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="available">Available</SelectItem>
+                              <SelectItem value="unavailable">Unavailable</SelectItem>
+                              <SelectItem value="seasonal">Seasonal</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="start_time">Start Time</Label>
+                          <Input
+                            id="start_time"
+                            name="start_time"
+                            type="time"
+                            value={newActivity.start_time}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="end_time">End Time</Label>
+                          <Input
+                            id="end_time"
+                            name="end_time"
+                            type="time"
+                            value={newActivity.end_time}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </div>
                       <div>
-                        <Label htmlFor="amenities">Amenities (comma separated)</Label>
+                        <Label htmlFor="meeting_point">Meeting Point</Label>
                         <Input
-                          id="amenities"
-                          name="amenities"
-                          value={newHotel.amenities.join(', ')}
-                          onChange={(e) => setNewHotel(prev => ({
-                            ...prev,
-                            amenities: e.target.value.split(',').map(item => item.trim()).filter(item => item)
-                          }))}
-                          placeholder="WiFi, Pool, Gym, etc."
+                          id="meeting_point"
+                          name="meeting_point"
+                          value={newActivity.meeting_point}
+                          onChange={handleInputChange}
                         />
                       </div>
                       <div>
-                        <Label htmlFor="room_types">Room Types (comma separated)</Label>
+                        <Label htmlFor="safety_requirements">Safety Requirements</Label>
+                        <Textarea
+                          id="safety_requirements"
+                          name="safety_requirements"
+                          value={newActivity.safety_requirements}
+                          onChange={handleInputChange}
+                          rows={2}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cancellation_policy">Cancellation Policy</Label>
+                        <Textarea
+                          id="cancellation_policy"
+                          name="cancellation_policy"
+                          value={newActivity.cancellation_policy}
+                          onChange={handleInputChange}
+                          rows={2}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="booking_deadline_hours">Booking Deadline (Hours)</Label>
                         <Input
-                          id="room_types"
-                          name="room_types"
-                          value={newHotel.room_types.join(', ')}
-                          onChange={(e) => setNewHotel(prev => ({
+                          id="booking_deadline_hours"
+                          name="booking_deadline_hours"
+                          type="number"
+                          min="0"
+                          max="168"
+                          value={newActivity.booking_deadline_hours}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="inclusions">Inclusions (comma separated)</Label>
+                        <Input
+                          id="inclusions"
+                          name="inclusions"
+                          value={newActivity.inclusions.join(', ')}
+                          onChange={(e) => setNewActivity(prev => ({
                             ...prev,
-                            room_types: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                            inclusions: e.target.value.split(',').map(item => item.trim()).filter(item => item)
                           }))}
-                          placeholder="Standard, Deluxe, Suite, etc."
+                          placeholder="Equipment, Instructor, Lunch, etc."
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="exclusions">Exclusions (comma separated)</Label>
+                        <Input
+                          id="exclusions"
+                          name="exclusions"
+                          value={newActivity.exclusions.join(', ')}
+                          onChange={(e) => setNewActivity(prev => ({
+                            ...prev,
+                            exclusions: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                          }))}
+                          placeholder="Transport, Photos, etc."
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="available_days">Available Days (comma separated)</Label>
+                        <Input
+                          id="available_days"
+                          name="available_days"
+                          value={newActivity.available_days.join(', ')}
+                          onChange={(e) => setNewActivity(prev => ({
+                            ...prev,
+                            available_days: e.target.value.split(',').map(item => item.trim().toLowerCase()).filter(item => item)
+                          }))}
+                          placeholder="Monday, Wednesday, Friday, etc."
                         />
                       </div>
                       <div>
@@ -1097,9 +1209,9 @@ const Hotels = () => {
                           <div className="mt-2 grid grid-cols-3 gap-2">
                             {previewPhotos.map((preview, index) => (
                               <div key={index} className="relative group">
-                                <img 
-                                  src={preview} 
-                                  alt={`Preview ${index}`} 
+                                <img
+                                  src={preview}
+                                  alt={`Preview ${index}`}
                                   className="w-full h-24 object-cover rounded"
                                 />
                                 <Button
@@ -1118,8 +1230,8 @@ const Hotels = () => {
                       </div>
                     </div>
                     <div className="flex justify-end gap-2 pt-4">
-                      <Button onClick={handleAddHotel} className="bg-green-600 hover:bg-green-700">
-                        Add Hotel
+                      <Button onClick={handleAddActivity} className="bg-green-600 hover:bg-green-700">
+                        Add Activity
                       </Button>
                     </div>
                   </div>
@@ -1127,20 +1239,20 @@ const Hotels = () => {
               </Dialog>
             </div>
 
-            {/* Hotel Cards */}
+            {/* Activity Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {hotels.map((hotel) => (
-                <Card key={hotel.hotel_id} className="overflow-hidden flex flex-col">
+              {activities.map((activity) => (
+                <Card key={activity.activity_id} className="overflow-hidden flex flex-col">
                   <div className="relative">
-                    {hotel.photos && hotel.photos.length > 0 ? (
-                      <img 
-                        src={hotel.photos[0]} 
-                        alt={hotel.name} 
+                    {activity.photos && activity.photos.length > 0 ? (
+                      <img
+                        src={activity.photos[0]}
+                        alt={activity.name}
                         className="w-full h-48 object-cover"
                       />
                     ) : (
                       <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                        <Building className="h-12 w-12 text-gray-400" />
+                        <MapPin className="h-12 w-12 text-gray-400" />
                       </div>
                     )}
                     <div className="absolute top-2 right-2 flex gap-1">
@@ -1148,7 +1260,7 @@ const Hotels = () => {
                         size="sm"
                         variant="secondary"
                         className="h-8 w-8 p-0"
-                        onClick={() => startEdit(hotel)}
+                        onClick={() => startEdit(activity)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -1156,7 +1268,7 @@ const Hotels = () => {
                         size="sm"
                         variant="destructive"
                         className="h-8 w-8 p-0"
-                        onClick={() => handleDeleteHotel(hotel.hotel_id)}
+                        onClick={() => handleDeleteActivity(activity.activity_id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -1164,36 +1276,46 @@ const Hotels = () => {
                   </div>
                   <CardContent className="p-4 flex-grow">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-lg">{hotel.name}</h3>
-                      <Badge variant="outline" className="text-sm">
-                        {hotel.star_rating || 'N/A'}★
-                      </Badge>
+                      <h3 className="font-bold text-lg">{activity.name}</h3>
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 text-yellow-500 mr-1" />
+                        <span className="text-sm">{activity.average_rating || 'N/A'}</span>
+                      </div>
                     </div>
                     <div className="flex items-center mt-1 text-sm text-gray-600">
-                      <span className="mr-1">📍</span>
-                      {hotel.city}, {hotel.country}
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {activity.destination}
+                    </div>
+                    <div className="mt-2 flex items-center text-sm text-gray-500">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {activity.duration_hours > 0 ? `${activity.duration_hours}h` : ''}
+                      {activity.duration_minutes > 0 ? ` ${activity.duration_minutes}m` : ''}
+                    </div>
+                    <div className="mt-2 flex items-center text-sm text-gray-500">
+                      <DollarSign className="h-4 w-4 mr-1" />
+                      ₹{activity.price}
                     </div>
                     <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                      {hotel.description || 'No description available'}
+                      {activity.description || 'No description available'}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-1">
-                      {hotel.amenities?.slice(0, 3).map((amenity, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {amenity}
+                      {activity.category && (
+                        <Badge variant="secondary" className="text-xs">
+                          {activity.category}
                         </Badge>
-                      ))}
-                      {hotel.amenities && hotel.amenities.length > 3 && (
+                      )}
+                      {activity.difficulty_level && (
                         <Badge variant="outline" className="text-xs">
-                          +{hotel.amenities.length - 3} more
+                          {activity.difficulty_level}
                         </Badge>
                       )}
                     </div>
                     <div className="mt-4 flex justify-between items-center">
                       <span className="text-sm text-gray-500">
-                        {hotel.photos?.length || 0} photos
+                        {activity.photos?.length || 0} photos
                       </span>
                       <span className="text-sm text-gray-500">
-                        {hotel.total_reviews || 0} reviews
+                        {activity.total_reviews || 0} reviews
                       </span>
                     </div>
                   </CardContent>
@@ -1202,16 +1324,16 @@ const Hotels = () => {
             </div>
           </>
         ) : (
-          <BookingsManagement />
+          <ActivityBookingsManagement />
         )}
       </CardContent>
-      
-      {/* Edit Hotel Dialog - Responsive */}
-      {editingHotel && (
-        <Dialog open={!!editingHotel} onOpenChange={() => setEditingHotel(null)}>
+
+      {/* Edit Activity Dialog - Responsive */}
+      {editingActivity && (
+        <Dialog open={!!editingActivity} onOpenChange={() => setEditingActivity(null)}>
           <DialogContent className="w-[95vw] max-w-2xl h-[95vh] max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0">
             <DialogHeader className="p-4 sm:p-6 pb-2 sm:pb-4 border-b shrink-0">
-              <DialogTitle>Edit Hotel</DialogTitle>
+              <DialogTitle>Edit Activity</DialogTitle>
             </DialogHeader>
             {/* Scrollable form content */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 pt-2 sm:pt-4">
@@ -1223,212 +1345,269 @@ const Hotels = () => {
                 )}
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <Label htmlFor="edit-name">Hotel Name</Label>
+                    <Label htmlFor="edit-name">Activity Name</Label>
                     <Input
                       id="edit-name"
                       name="name"
-                      value={editingHotel.name || ''}
+                      value={editingActivity.name || ''}
                       onChange={handleEditInputChange}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-city">City</Label>
-                      <Input
-                        id="edit-city"
-                        name="city"
-                        value={editingHotel.city || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-country">Country</Label>
-                      <Input
-                        id="edit-country"
-                        name="country"
-                        value={editingHotel.country || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="edit-address">Address</Label>
-                    <Input
-                      id="edit-address"
-                      name="address"
-                      value={editingHotel.address || ''}
-                      onChange={handleEditInputChange}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-zip_code">ZIP Code</Label>
-                      <Input
-                        id="edit-zip_code"
-                        name="zip_code"
-                        value={editingHotel.zip_code || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-star_rating">Star Rating</Label>
-                      <Select
-                        name="star_rating"
-                        value={editingHotel.star_rating?.toString() || '3'}
-                        onValueChange={(value) => setEditingHotel(prev => ({...prev, star_rating: parseInt(value)}))}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[1, 2, 3, 4, 5].map(rating => (
-                            <SelectItem key={rating} value={rating.toString()}>{rating} Star{rating > 1 ? 's' : ''}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-latitude">Latitude</Label>
-                      <Input
-                        id="edit-latitude"
-                        name="latitude"
-                        type="number"
-                        step="any"
-                        value={editingHotel.latitude || ''}
-                        onChange={handleEditInputChange}
-                        placeholder="e.g. 40.7128"
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-longitude">Longitude</Label>
-                      <Input
-                        id="edit-longitude"
-                        name="longitude"
-                        type="number"
-                        step="any"
-                        value={editingHotel.longitude || ''}
-                        onChange={handleEditInputChange}
-                        placeholder="e.g. -74.0060"
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-contact_phone">Phone</Label>
-                      <Input
-                        id="edit-contact_phone"
-                        name="contact_phone"
-                        type="tel"
-                        value={editingHotel.contact_phone || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-contact_email">Email</Label>
-                      <Input
-                        id="edit-contact_email"
-                        name="contact_email"
-                        type="email"
-                        value={editingHotel.contact_email || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="edit-website_url">Website</Label>
-                    <Input
-                      id="edit-website_url"
-                      name="website_url"
-                      type="url"
-                      value={editingHotel.website_url || ''}
-                      onChange={handleEditInputChange}
-                      placeholder="https://example.com"
                       className="w-full"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="edit-booking_link">Booking Link</Label>
+                    <Label htmlFor="edit-destination">Destination</Label>
                     <Input
-                      id="edit-booking_link"
-                      name="booking_link"
-                      type="url"
-                      value={editingHotel.booking_link || ''}
+                      id="edit-destination"
+                      name="destination"
+                      value={editingActivity.destination || ''}
                       onChange={handleEditInputChange}
-                      placeholder="https://booking.example.com"
                       className="w-full"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-check_in_time">Check-in Time</Label>
-                      <Input
-                        id="edit-check_in_time"
-                        name="check_in_time"
-                        type="time"
-                        value={editingHotel.check_in_time || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-check_out_time">Check-out Time</Label>
-                      <Input
-                        id="edit-check_out_time"
-                        name="check_out_time"
-                        type="time"
-                        value={editingHotel.check_out_time || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="edit-category">Category</Label>
+                    <Input
+                      id="edit-category"
+                      name="category"
+                      value={editingActivity.category || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
                   </div>
                   <div>
                     <Label htmlFor="edit-description">Description</Label>
                     <Textarea
                       id="edit-description"
                       name="description"
-                      value={editingHotel.description || ''}
+                      value={editingActivity.description || ''}
                       onChange={handleEditInputChange}
                       rows={3}
                       className="w-full resize-none"
                     />
                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-duration_hours">Duration (Hours)</Label>
+                      <Input
+                        id="edit-duration_hours"
+                        name="duration_hours"
+                        type="number"
+                        min="0"
+                        step="any"
+                        value={editingActivity.duration_hours || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-duration_minutes">Duration (Minutes)</Label>
+                      <Input
+                        id="edit-duration_minutes"
+                        name="duration_minutes"
+                        type="number"
+                        min="0"
+                        max="59"
+                        value={editingActivity.duration_minutes || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-price">Price</Label>
+                      <Input
+                        id="edit-price"
+                        name="price"
+                        type="number"
+                        min="0"
+                        step="any"
+                        value={editingActivity.price || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-currency">Currency</Label>
+                      <Input
+                        id="edit-currency"
+                        name="currency"
+                        value={editingActivity.currency || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-max_participants">Max Participants</Label>
+                      <Input
+                        id="edit-max_participants"
+                        name="max_participants"
+                        type="number"
+                        min="1"
+                        value={editingActivity.max_participants || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-min_age">Minimum Age</Label>
+                      <Input
+                        id="edit-min_age"
+                        name="min_age"
+                        type="number"
+                        min="0"
+                        value={editingActivity.min_age || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-difficulty_level">Difficulty Level</Label>
+                      <Select
+                        name="difficulty_level"
+                        value={editingActivity.difficulty_level || 'easy'}
+                        onValueChange={(value) => setEditingActivity(prev => ({...prev, difficulty_level: value}))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="easy">Easy</SelectItem>
+                          <SelectItem value="moderate">Moderate</SelectItem>
+                          <SelectItem value="challenging">Challenging</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-availability_status">Availability Status</Label>
+                      <Select
+                        name="availability_status"
+                        value={editingActivity.availability_status || 'available'}
+                        onValueChange={(value) => setEditingActivity(prev => ({...prev, availability_status: value}))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="available">Available</SelectItem>
+                          <SelectItem value="unavailable">Unavailable</SelectItem>
+                          <SelectItem value="seasonal">Seasonal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="edit-start_time">Start Time</Label>
+                      <Input
+                        id="edit-start_time"
+                        name="start_time"
+                        type="time"
+                        value={editingActivity.start_time || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="edit-end_time">End Time</Label>
+                      <Input
+                        id="edit-end_time"
+                        name="end_time"
+                        type="time"
+                        value={editingActivity.end_time || ''}
+                        onChange={handleEditInputChange}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
                   <div>
-                    <Label htmlFor="edit-amenities">Amenities (comma separated)</Label>
+                    <Label htmlFor="edit-meeting_point">Meeting Point</Label>
                     <Input
-                      id="edit-amenities"
-                      name="amenities"
-                      value={editingHotel.amenities?.join(', ') || ''}
-                      onChange={(e) => setEditingHotel(prev => ({
-                        ...prev,
-                        amenities: e.target.value.split(',').map(item => item.trim()).filter(item => item)
-                      }))}
-                      placeholder="WiFi, Pool, Gym, etc."
+                      id="edit-meeting_point"
+                      name="meeting_point"
+                      value={editingActivity.meeting_point || ''}
+                      onChange={handleEditInputChange}
                       className="w-full"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="edit-room_types">Room Types (comma separated)</Label>
+                    <Label htmlFor="edit-safety_requirements">Safety Requirements</Label>
+                    <Textarea
+                      id="edit-safety_requirements"
+                      name="safety_requirements"
+                      value={editingActivity.safety_requirements || ''}
+                      onChange={handleEditInputChange}
+                      rows={2}
+                      className="w-full resize-none"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-cancellation_policy">Cancellation Policy</Label>
+                    <Textarea
+                      id="edit-cancellation_policy"
+                      name="cancellation_policy"
+                      value={editingActivity.cancellation_policy || ''}
+                      onChange={handleEditInputChange}
+                      rows={2}
+                      className="w-full resize-none"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-booking_deadline_hours">Booking Deadline (Hours)</Label>
                     <Input
-                      id="edit-room_types"
-                      name="room_types"
-                      value={editingHotel.room_types?.join(', ') || ''}
-                      onChange={(e) => setEditingHotel(prev => ({
+                      id="edit-booking_deadline_hours"
+                      name="booking_deadline_hours"
+                      type="number"
+                      min="0"
+                      max="168"
+                      value={editingActivity.booking_deadline_hours || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-inclusions">Inclusions (comma separated)</Label>
+                    <Input
+                      id="edit-inclusions"
+                      name="inclusions"
+                      value={editingActivity.inclusions?.join(', ') || ''}
+                      onChange={(e) => setEditingActivity(prev => ({
                         ...prev,
-                        room_types: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                        inclusions: e.target.value.split(',').map(item => item.trim()).filter(item => item)
                       }))}
-                      placeholder="Standard, Deluxe, Suite, etc."
+                      placeholder="Equipment, Instructor, Lunch, etc."
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-exclusions">Exclusions (comma separated)</Label>
+                    <Input
+                      id="edit-exclusions"
+                      name="exclusions"
+                      value={editingActivity.exclusions?.join(', ') || ''}
+                      onChange={(e) => setEditingActivity(prev => ({
+                        ...prev,
+                        exclusions: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                      }))}
+                      placeholder="Transport, Photos, etc."
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-available_days">Available Days (comma separated)</Label>
+                    <Input
+                      id="edit-available_days"
+                      name="available_days"
+                      value={editingActivity.available_days?.join(', ') || ''}
+                      onChange={(e) => setEditingActivity(prev => ({
+                        ...prev,
+                        available_days: e.target.value.split(',').map(item => item.trim().toLowerCase()).filter(item => item)
+                      }))}
+                      placeholder="Monday, Wednesday, Friday, etc."
                       className="w-full"
                     />
                   </div>
@@ -1448,18 +1627,18 @@ const Hotels = () => {
                         <span className="sm:hidden">Upload Photos</span>
                       </Button>
                     </div>
-                    {(editPreviewPhotos.length > 0 || (editingHotel.photos && editingHotel.photos.length > 0)) && (
+                    {(editPreviewPhotos.length > 0 || (editingActivity.photos && editingActivity.photos.length > 0)) && (
                       <div className="mt-3 space-y-4">
                         {/* Current Photos */}
-                        {editingHotel.photos && editingHotel.photos.length > 0 && (
+                        {editingActivity.photos && editingActivity.photos.length > 0 && (
                           <div>
                             <p className="text-sm text-gray-600 mb-2 font-medium">Current Photos:</p>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                              {editingHotel.photos.map((photo, index) => (
+                              {editingActivity.photos.map((photo, index) => (
                                 <div key={`existing-${index}`} className="relative group">
-                                  <img 
-                                    src={photo} 
-                                    alt={`Existing ${index}`} 
+                                  <img
+                                    src={photo}
+                                    alt={`Existing ${index}`}
                                     className="w-full h-20 sm:h-24 object-cover rounded border"
                                   />
                                   <Button
@@ -1483,9 +1662,9 @@ const Hotels = () => {
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                               {editPreviewPhotos.map((photo, index) => (
                                 <div key={`new-${index}`} className="relative group">
-                                  <img 
-                                    src={photo} 
-                                    alt={`New Preview ${index}`} 
+                                  <img
+                                    src={photo}
+                                    alt={`New Preview ${index}`}
                                     className="w-full h-20 sm:h-24 object-cover rounded border-2 border-green-200"
                                   />
                                   <Button
@@ -1511,19 +1690,19 @@ const Hotels = () => {
             {/* Fixed footer with action buttons */}
             <div className="p-4 sm:p-6 pt-2 sm:pt-4 border-t bg-white shrink-0">
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-end">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setEditingHotel(null)}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEditingActivity(null)}
                   className="w-full sm:w-auto order-2 sm:order-1"
                 >
                   Cancel
                 </Button>
-                <Button 
-                  onClick={handleUpdateHotel}
+                <Button
+                  onClick={handleUpdateActivity}
                   className="bg-green-600 hover:bg-green-700 w-full sm:w-auto order-1 sm:order-2"
                 >
-                  Update Hotel
+                  Update Activity
                 </Button>
               </div>
             </div>
@@ -1534,4 +1713,4 @@ const Hotels = () => {
   );
 };
 
-export default Hotels;
+export default AdminActivities;

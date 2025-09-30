@@ -1,9 +1,9 @@
-// src/components/Home.jsx
-
+// src/Pages/Home/Home.jsx
 import React, { useState } from 'react';
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Home2 from './Home2';
+import Activities from './Activities';
 
 // Shadcn UI & Lucide Icons
 import { Card } from '@/components/ui/card';
@@ -199,6 +199,7 @@ const Home = () => {
         </div>
       </div>
       <Home2 />
+      <Activities />
     </>
   );
 };
