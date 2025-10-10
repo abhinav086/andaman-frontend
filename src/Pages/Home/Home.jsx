@@ -1,206 +1,179 @@
-// src/Pages/Home/Home.jsx
-import React, { useState } from 'react';
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import Home2 from './Home2';
-import Activities from './Activities';
+import React from 'react';
+import { MapPin, Calendar, Search, Star, Plane, Ticket, Gem } from 'lucide-react';
+import Home2 from './Home2'
+import Home3 from './Home3'
+import Activities from './Activities'
 
-// Shadcn UI & Lucide Icons
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Search, MapPin, Calendar as CalendarIcon, Users } from 'lucide-react';
-
-// Local Assets
-import vid1 from '../../assets/vid1.mp4';
+// --- IMPORTANT ---
+// Replace these with your actual image paths after downloading them
+// You can find similar free images on sites like Pexels, Unsplash, or Freepik.
+import worldMap from  '../../assets/world-map.png'; // A light grey world map background
+import tourist from '../../assets/island.png';     // A tourist with a transparent background
+import landscape from '../../assets/tourist.jpg'; // A landscape photo
 
 const customFontStyle = {
   fontFamily: "'Neue Montreal Regular', sans-serif",
   fontWeight: 600,
   fontStyle: "normal",
 };
+
 const customFontStyle2 = {
-  fontFamily: "'Neue Montreal Regular', sans-serif",
-  fontWeight: 200,
+  fontFamily: "'Travel October', sans-serif",
+  fontWeight: 600,
   fontStyle: "normal",
 };
 
+const FeatureCard = ({ icon, title, description }) => (
+  <div className="flex flex-col items-center md:items-start text-center md:text-left">
+    <div className="bg-[#F1F0FE] p-3 rounded-xl mb-4">
+      {icon}
+    </div>
+    <h3 className="text-xl font-bold text-gray-800 mb-2">{title}</h3>
+    <p className="text-gray-500 leading-relaxed">{description}</p>
+  </div>
+);
+
 const Home = () => {
-  // State management for the form inputs
-  const [location, setLocation] = useState('');
-  const [checkInDate, setCheckInDate] = useState(null);
-  const [checkOutDate, setCheckOutDate] = useState(null);
-  const [participants, setParticipants] = useState('');
-
-  // Handler for the search button click
-  const handleSearch = () => {
-    // "Hot Dummy API" - Simulate an API call by logging the data
-    const searchData = {
-      location,
-      checkIn: checkInDate ? format(checkInDate, "yyyy-MM-dd") : null,
-      checkOut: checkOutDate ? format(checkOutDate, "yyyy-MM-dd") : null,
-      participants,
-    };
-    console.log('Searching with the following data:', searchData);
-  };
-
   return (
+
     <>
-      <div className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden">
-        {/* Video Background */}
-        <video
-          src={vid1}
-          autoPlay
-          loop
-          muted
-          className="absolute top-0 left-0 w-full h-full object-cover z-0"
-        />
+       <div className="bg-white font-sans text-gray-800  relative overflow-hidden">
+      {/* Background World Map */}
+      <img
+        src={worldMap}
+        alt="World Map"
+        className="absolute top-0 left-0 w-full h-full object-cover opacity-5 z-0"
+      />
+      
+      {/* Decorative Dots */}
+      <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-orange-300 rounded-full opacity-50"></div>
+      <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-purple-300 rounded-full opacity-50"></div>
+      <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-orange-300 rounded-full opacity-50"></div>
 
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/50 z-10" />
 
-        <div className="relative z-20 w-full max-w-6xl px-4 flex flex-col items-center">
-          {/* Hero Text */}
-          <div className="text-center text-white mt-10 md:mt-20 w-full">
-            <div
-              style={customFontStyle2}
-              className="inline-block bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 text-xs sm:text-sm font-medium mb-4" // Adjusted text size for smaller screens
-            >
-              Travel More. Worry Less.
-            </div>
-            <h1
-              style={customFontStyle}
-              className="text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-bold leading-tight px-4"
-            >
-              Explore the World, One <br className="hidden md:block" /> Journey at a Time. {/* Hide <br> on mobile */}
+      <div className="container mx-auto px-6 py-8 relative z-10">
+        {/* Header */}
+        <header style={customFontStyle} className="flex mt-20 items-center space-x-4">
+          <div className="bg-[#F1F0FE] text-[#6355B5] text-sm font-bold px-4 py-2 rounded-full">
+            42 Packet Travel
+          </div>
+          <div className="bg-[#FFF4E7] text-[#FFA800] text-sm font-bold px-4 py-2 rounded-full">
+            For Explorer Friendly
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <main className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mt-12 md:mt-20">
+          {/* Left Side: Text and Search */}
+          <div className="flex flex-col gap-8">
+            <h1 style={customFontStyle}  className="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">
+              Feeling <span className="text-[#6355B5]">Bored</span> and Wanna Take Some <span className="text-[#FF7900]">Vacation</span>
+              <Plane className="inline-block text-[#6355B5] ml-2 transform -rotate-60 h-10 w-10" />
             </h1>
-            <p
-              style={customFontStyle2}
-              className="mt-4 max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-white/80 px-4" // Adjusted text size for smaller screens
-            >
-              Our travel agency offers personalized, hassle-free travel experiences, tailored to meet your unique preferences and needs.
+
+             <h1 style={customFontStyle2}  className="text-5xl md:text-7xl font-extrabold text-gray-800 leading-tight">
+              Make Andaman Trip
+           
+            </h1>
+
+            <p style={customFontStyle}  className="text-gray-500 text-lg">
+              We always make our costumer happy by providing a lot of travel packet and costumer can custom their own packet travel.
             </p>
+            
+            {/* Search Form */}
+            <div className="bg-white p-4 rounded-2xl shadow-lg flex flex-col md:flex-row items-center gap-4">
+              <div className="flex items-center w-full">
+                <MapPin className="text-[#6355B5] h-6 w-6 mr-3" />
+                <div>
+                  <p className="text-sm text-gray-400">Location</p>
+                  <p className="font-semibold">Belitung, Indonesia</p>
+                </div>
+              </div>
+              <div className="w-full md:w-px h-px md:h-12 bg-gray-200"></div>
+              <div className="flex items-center w-full">
+                <Calendar className="text-[#6355B5] h-6 w-6 mr-3" />
+                <div>
+                  <p className="text-sm text-gray-400">Date</p>
+                  <p className="font-semibold">22 October 2020</p>
+                </div>
+              </div>
+              <button className="bg-[#6355B5] text-white p-4 rounded-xl w-full md:w-auto">
+                <Search className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Dotted line with plane icon */}
+            <div className="relative mt-8 h-12">
+                <svg className="absolute left-0 top-0 w-2/3 h-auto" viewBox="0 0 200 50">
+                    <path d="M 5,45 C 50,5 150,5 195,45" stroke="#D1D5DB" strokeWidth="2" fill="none" strokeDasharray="5,5"/>
+                </svg>
+                <Plane className="absolute text-[#6355B5] h-6 w-6 transform -rotate-12" style={{left: '35%', top: '0%'}}/>
+            </div>
+
           </div>
 
-          {/* Search Card */}
-          <Card className=" hidden md:flex w-full max-w-4xl mt-8 md:mt-12 bg-white/95 backdrop-blur-lg p-2.5 rounded-2xl shadow-xl border-none mx-4"> {/* Added mx-4 for horizontal padding on small screens */}
-            <div className="flex flex-col md:flex-row items-center justify-between bg-white p-2 md:p-4 rounded-xl gap-2 md:gap-4"> {/* Adjusted padding and gap for mobile */}
+          {/* Right Side: Image and Card */}
+          <div className="relative hidden lg:block h-[550px]">
+            {/* Purple background shape */}
+            <div className="absolute top-0 right-0 w-[85%] h-[95%] bg-[#F1F0FE] rounded-3xl transform -rotate-6"></div>
+            
+            {/* Tourist Image */}
+            <img 
+              src={tourist} 
+              alt="A tourist with a backpack and hat" 
+              className="absolute bottom-0 right-0 h-full w-auto object-contain z-10"
+            />
 
-              {/* Location Input Group */}
-              <div className="flex-1 flex items-center space-x-3 px-2 py-2 w-full border-b md:border-b-0 border-gray-200 last:border-b-0"> {/* Added bottom border for mobile stacking */}
-                <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                <div className="flex flex-col w-full">
-                  <label className="text-xs font-semibold text-gray-500">Location</label>
-                  <Input
-                    placeholder="Where are you going?"
-                    className="border-0 focus-visible:ring-0 p-0 h-auto text-sm md:text-md placeholder:text-gray-400"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                  />
+            {/* Floating Info Card */}
+            <div style={customFontStyle}  className="absolute bottom-8 left-0 bg-white p-4 rounded-2xl shadow-xl w-64 z-20">
+              <img src={landscape} alt="Indonesia landscape" className="rounded-lg mb-3 h-32 w-full object-cover"/>
+              <h4 className="font-bold text-gray-800">Get Ready to Explore Andaman Islands</h4>
+              
+              <div className="flex items-center mt-3">
+                <div className="flex text-yellow-400">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
                 </div>
+                <p className="text-xs text-gray-500 ml-2">800+ Review</p>
               </div>
-
-              <div className="hidden md:block h-12 self-center border-l border-gray-200 w-0.5" /> {/* Hidden on mobile */}
-
-              {/* Check-in Date Picker Group */}
-              <div className="flex-1 flex items-center space-x-3 px-2 py-2 w-full border-b md:border-b-0 border-gray-200 last:border-b-0">
-                <CalendarIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                <div className="flex flex-col w-full">
-                  <label className="text-xs font-semibold text-gray-500">Check In</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"ghost"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal p-0 h-auto text-sm md:text-md hover:bg-transparent placeholder:text-gray-400",
-                          !checkInDate && "text-muted-foreground"
-                        )}
-                      >
-                        {checkInDate ? format(checkInDate, "PPP") : <span className="text-gray-400">Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={checkInDate}
-                        onSelect={setCheckInDate}
-                        disabled={(date) => date < new Date().setHours(0,0,0,0)}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-
-              <div className="hidden md:block h-12 self-center border-l border-gray-200 w-0.5" /> {/* Hidden on mobile */}
-
-              {/* Check-out Date Picker Group */}
-              <div className="flex-1 flex items-center space-x-3 px-2 py-2 w-full border-b md:border-b-0 border-gray-200 last:border-b-0">
-                <CalendarIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                <div className="flex flex-col w-full">
-                  <label className="text-xs font-semibold text-gray-500">Check Out</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"ghost"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal p-0 h-auto text-sm md:text-md hover:bg-transparent",
-                          !checkOutDate && "text-muted-foreground"
-                        )}
-                      >
-                        {checkOutDate ? format(checkOutDate, "PPP") : <span className="text-gray-400">Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={checkOutDate}
-                        onSelect={setCheckOutDate}
-                        disabled={(date) => date <= checkInDate || !checkInDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-
-              <div className="hidden md:block h-12 self-center border-l border-gray-200 w-0.5" /> {/* Hidden on mobile */}
-
-              {/* Participants Input Group */}
-              <div className="flex-1 flex items-center space-x-3 px-2 py-2 w-full"> {/* Removed border-b as it's the last item */}
-                <Users className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                <div className="flex flex-col w-full">
-                  <label className="text-xs font-semibold text-gray-500">Participants</label>
-                  <Input
-                    type="text"
-                    placeholder="Add guests"
-                    onFocus={(e) => e.target.type = 'number'}
-                    onBlur={(e) => e.target.type = 'text'}
-                    className="border-0 focus-visible:ring-0 p-0 h-auto text-sm md:text-md placeholder:text-gray-400"
-                    min="1"
-                    value={participants}
-                    onChange={(e) => setParticipants(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Search Button */}
-              <Button
-                size="icon"
-                className="h-10 w-full md:w-12 md:h-12 rounded-xl flex-shrink-0 mt-2 md:mt-0" // Full width on mobile, adjusted height/width, added top margin
-                onClick={handleSearch}
-              >
-                <Search className="h-5 w-5" />
-              </Button>
             </div>
-          </Card>
-        </div>
+          </div>
+        </main>
+
+        {/* Services Section */}
+        <section style={customFontStyle}  className="text-center mt-24 md:mt-32">
+          <p style={customFontStyle} className="text-gray-500 font-semibold tracking-widest text-sm">WHAT WE SERVE</p>
+          <h2 style={customFontStyle2} className="text-5xl font-extrabold text-gray-800 mt-2">What Will You Get?</h2>
+          <p className="text-gray-500 mt-4 max-w-lg mx-auto">
+            In every single trip that you go, you will get serve like a king.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-12">
+            <FeatureCard 
+              icon={<MapPin className="h-6 w-6 text-[#6355B5]" />}
+              title="Lot of Travel Places"
+              description="We will provide a lot of places in every single trip that you pick."
+            />
+            <FeatureCard 
+              icon={<Ticket className="h-6 w-6 text-[#6355B5]" />}
+              title="Cheap Travel Packet"
+              description="Every packet travel that you chooses, will not till you."
+            />
+            <FeatureCard 
+              icon={<Gem className="h-6 w-6 text-[#6355B5]" />}
+              title="And More Bonus"
+              description="We will make sure that you happy in our trip, so you will get some bonus in your trip."
+            />
+          </div>
+        </section>
+
       </div>
-      <Home2 />
-      <Activities />
+     
+    </div>
+    <Home2 />
+    <Activities />
+    <Home3 />
     </>
+ 
   );
 };
 

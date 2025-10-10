@@ -29,11 +29,8 @@ import AdminSettings from "./admin/AdminSettings";
 function AppContent() {
   const location = useLocation();
   
-  // Hide header for admin routes and auth pages (login/signup)
-  const hideHeader = 
-    location.pathname.startsWith('/admin') || 
-    location.pathname === '/login' || 
-    location.pathname === '/signup';
+  // Hide header only for admin routes (not for auth pages like login/signup)
+  const hideHeader = location.pathname.startsWith('/admin');
 
   return (
     <>
@@ -77,7 +74,7 @@ function AppContent() {
           </Route>
         </Routes>
       </main>
-       {!hideHeader && <Footer />}
+      {!hideHeader && <Footer />}
     </>
   );
 }
