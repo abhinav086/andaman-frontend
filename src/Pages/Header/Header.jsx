@@ -2,69 +2,62 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import logo from '../../assets/logomain.png';
+import {
+  Plane, Menu, X, Home, Users, Briefcase, Rss, Mail, Shield, LogIn, UserPlus, LogOut,
+} from 'lucide-react'; // Import all necessary icons
 import { motion, AnimatePresence } from 'framer-motion';
+import logo from '../../assets/logomain.png'; // Ensure you have a logo image in the specified path
 
+// --- Custom Font Style ---
 const customFontStyle = {
   fontFamily: "'Neue Montreal Regular', sans-serif",
   fontWeight: 600,
   fontStyle: "normal",
 };
 
-// Hamburger Icon with animation
+// --- Hamburger Icon Component ---
 const HamburgerIcon = ({ isOpen, onClick }) => (
   <button
     className="md:hidden p-2 text-white focus:outline-none z-50 relative"
     onClick={onClick}
     aria-label={isOpen ? "Close menu" : "Open menu"}
   >
-    <div className="relative w-6 h-6 flex flex-col justify-center items-center">
-      <motion.span
-        className={`block h-0.5 w-6 bg-white rounded-full transition-all duration-300 ${
-          isOpen ? 'rotate-45 translate-y-0' : '-translate-y-1.5'
-        }`}
-        animate={{
-          rotate: isOpen ? 45 : 0,
-          translateY: isOpen ? 0 : -1.5,
-        }}
-        transition={{ duration: 0.3 }}
-      />
-      <motion.span
-        className={`block h-0.5 w-6 bg-white rounded-full my-0.5 transition-all duration-300 ${
-          isOpen ? 'opacity-0' : 'opacity-100'
-        }`}
-        animate={{
-          opacity: isOpen ? 0 : 1,
-        }}
-        transition={{ duration: 0.3 }}
-      />
-      <motion.span
-        className={`block h-0.5 w-6 bg-white rounded-full transition-all duration-300 ${
-          isOpen ? '-rotate-45 translate-y-0' : 'translate-y-1.5'
-        }`}
-        animate={{
-          rotate: isOpen ? -45 : 0,
-          translateY: isOpen ? 0 : 1.5,
-        }}
-        transition={{ duration: 0.3 }}
-      />
-    </div>
+    {isOpen ? (
+      <X className="w-6 h-6 text-white" />
+    ) : (
+      <Menu className="w-6 h-6 text-white" />
+    )}
   </button>
 );
 
-const HalvoraLogo = () => (
+// --- Colored Logo Component ---
+const ColoredLogo = () => (
   <div className="flex items-center gap-2">
-    <img 
-      src={logo} 
-      alt="Make Andaman Trip Logo" 
-      className="w-8 h-8 sm:w-10 sm:h-10" 
-    />
-    <span style={customFontStyle} className=" text-sm md:text-xl font-bold text-white text-base sm:text-xl whitespace-nowrap">
+    <div className="">
+     <img className='h-12' src={logo} alt="" />
+    </div>
+    <span 
+      style={customFontStyle} 
+      className="text-sm md:text-xl font-bold bg-clip-text text-transparent bg-white whitespace-nowrap"
+    >
       Make Andaman Trip
     </span>
   </div>
 );
 
+// --- Navigation Link Component (Reusable for Desktop and Mobile) ---
+const NavLink = ({ name, path, icon: Icon, onClick, className = '' }) => (
+  <Button
+    variant="ghost"
+    className={`flex items-center gap-2 text-white hover:bg-white/10 hover:text-lime-400 rounded-full transition-all duration-200 ${className}`}
+    onClick={() => onClick(path)}
+  >
+    {Icon && <Icon className="w-4 h-4" />}
+    <span className="whitespace-nowrap">{name}</span>
+  </Button>
+);
+
+// --- Header Component ---
 const Header = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -79,12 +72,12 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Updated navigation links with icons
   const navLinks = [
-    { name: "About Us", path: "/about" },
-    { name: "Services", path: "/services" },
-    { name: "Blog", path: "/blog" },
-    { name: "Contact Us", path: "/contact" }
-    
+    { name: "About Us", path: "/about", icon: Users },
+    { name: "Services", path: "/services", icon: Briefcase },
+    { name: "Blog", path: "/blog", icon: Rss },
+    { name: "Contact Us", path: "/contact", icon: Mail }
   ];
 
   const handleLogout = () => {
@@ -103,42 +96,39 @@ const Header = () => {
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 px-4 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
       <nav className={`container mx-auto px-4 py-3 mt-4 bg-black/20 backdrop-blur-sm rounded-full flex justify-between items-center transition-all duration-300 ${
-        scrolled ? 'bg-black/70 py-2' : 'bg-black/20 py-3'
+        scrolled ? 'bg-black/70 py-2' : 'bg-black/50 py-3'
       }`}>
-        <HalvoraLogo />
+        <ColoredLogo />
 
         <div className="flex items-center gap-2 md:hidden">
-        
-          <HamburgerIcon isOpen={isMobileMenuOpen} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
+          <HamburgerIcon 
+            isOpen={isMobileMenuOpen} 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+          />
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-1 text-white">
-          <Button
-            variant="ghost"
-            className="text-white hover:bg-white/10 hover:text-white   hover:text-blue-700 rounded-full transition-all duration-200"
-            onClick={() => handleNavLinkClick('/')}
-          >
-            Home
-          </Button>
+          <NavLink
+            name="Home"
+            path="/"
+            icon={Home}
+            onClick={handleNavLinkClick}
+          />
           {navLinks.map((link) => (
-            <Button
+            <NavLink
               key={link.name}
-              variant="ghost"
-              className="text-white hover:bg-white/10 hover:text-blue-700  rounded-full transition-all duration-200"
-              onClick={() => handleNavLinkClick(link.path)}
-            >
-              {link.name}
-            </Button>
+              {...link}
+              onClick={handleNavLinkClick}
+            />
           ))}
           {isAdmin && (
-            <Button
-              variant="ghost"
-              className="text-white hover:bg-white/10 hover:text-white  hover:text-blue-700 rounded-full transition-all duration-200"
-              onClick={() => handleNavLinkClick('/admin')}
-            >
-              Admin Panel
-            </Button>
+            <NavLink
+              name="Admin Panel"
+              path="/admin"
+              icon={Shield}
+              onClick={handleNavLinkClick}
+            />
           )}
         </div>
         
@@ -148,26 +138,27 @@ const Header = () => {
               <span className="text-white whitespace-nowrap">Hello, {user.full_name || user.email}</span>
               <Button
                 variant="ghost"
-                className="text-white hover:bg-white/10 hover:text-red-500 hover:bg-black rounded-full transition-all duration-200"
+                className="flex items-center gap-2 text-white hover:bg-white/10 hover:text-red-500 hover:bg-black rounded-full transition-all duration-200"
                 onClick={handleLogout}
               >
+                <LogOut className="w-4 h-4" />
                 Logout
               </Button>
-              
             </div>
           ) : (
             <>
+              <NavLink
+                name="Log In"
+                path="/login"
+                icon={LogIn}
+                onClick={handleNavLinkClick}
+                className="hover:text-white"
+              />
               <Button
-                variant="ghost"
-                className="text-white hover:bg-white/10 hover:text-white rounded-full transition-all duration-200"
-                onClick={() => handleNavLinkClick('/login')}
-              >
-                Log In
-              </Button>
-              <Button
-                className="bg-lime-400 text-black font-bold rounded-full hover:bg-lime-500 transition-all duration-200"
+                className="flex items-center gap-2 bg-lime-400 text-black font-bold rounded-full hover:from-lime-500 hover:to-blue-600 transition-all duration-200"
                 onClick={() => handleNavLinkClick('/signup')}
               >
+                <UserPlus className="w-4 h-4" />
                 Sign Up
               </Button>
             </>
@@ -182,7 +173,7 @@ const Header = () => {
               animate={{ 
                 opacity: 1, 
                 height: 'auto',
-                backgroundColor: '#000000',
+                backgroundColor: 'rgba(0, 0, 0, 0.9)',
                 backdropFilter: 'blur(10px)',
               }}
               exit={{ 
@@ -198,18 +189,28 @@ const Header = () => {
               className="md:hidden absolute top-full left-0 right-0 mt-2 rounded-b-lg shadow-lg flex flex-col items-center z-40 overflow-hidden"
             >
               <div className="w-full py-4 flex flex-col gap-2">
-                    {user && (
-            <span className="text-white bg-orange-600  p-2 rounded-r-full text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[100px]">
-              Hello, {user.full_name || user.email}
-            </span>
-          )}
-                <Button
-                  variant="ghost"
-                  className="text-white hover:bg-white/10 hover:text-white w-full rounded-none transition-all duration-200"
-                  onClick={() => handleNavLinkClick('/')}
+                {user && (
+                  <span className="text-white bg-gradient-to-r from-lime-400 to-blue-500 p-2 rounded-r-full text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] mx-auto">
+                    Hello, {user.full_name || user.email}
+                  </span>
+                )}
+                
+                {/* Home Link (separate for animation delay context) */}
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0 * 0.05, ease: "easeOut" }}
                 >
-                  Home
-                </Button>
+                    <NavLink
+                        name="Home"
+                        path="/"
+                        icon={Home}
+                        onClick={handleNavLinkClick}
+                        className="w-full justify-center rounded-none"
+                    />
+                </motion.div>
+
+                {/* Nav Links */}
                 {navLinks.map((link, index) => (
                   <motion.div
                     key={link.name}
@@ -217,57 +218,42 @@ const Header = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ 
                       duration: 0.3, 
-                      delay: index * 0.05,
+                      delay: (index + 1) * 0.05, // Offset by 1 for 'Home' link
                       ease: "easeOut"
                     }}
                   >
-                    <Button
-                      variant="ghost"
-                      className="text-white hover:bg-white/10 hover:text-white w-full rounded-none transition-all duration-200"
-                      onClick={() => handleNavLinkClick(link.path)}
-                    >
-                      {link.name}
-                    </Button>
+                    <NavLink
+                      {...link}
+                      onClick={handleNavLinkClick}
+                      className="w-full justify-center rounded-none"
+                    />
                   </motion.div>
                 ))}
+
+                {/* Admin Link */}
                 {isAdmin && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ 
                       duration: 0.3, 
-                      delay: navLinks.length * 0.05,
+                      delay: (navLinks.length + 1) * 0.05,
                       ease: "easeOut"
                     }}
                   >
-                    <Button
-                      variant="ghost"
-                      className="text-white hover:bg-white/10 hover:text-white w-full rounded-none transition-all duration-200"
-                      onClick={() => handleNavLinkClick('/admin')}
-                    >
-                      Admin Panel
-                    </Button>
+                    <NavLink
+                      name="Admin Panel"
+                      path="/admin"
+                      icon={Shield}
+                      onClick={handleNavLinkClick}
+                      className="w-full justify-center rounded-none"
+                    />
                   </motion.div>
                 )}
+                
+                {/* Auth Buttons */}
                 {!user ? (
                   <>
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ 
-                        duration: 0.3, 
-                        delay: (navLinks.length + (isAdmin ? 1 : 0)) * 0.05,
-                        ease: "easeOut"
-                      }}
-                    >
-                      <Button
-                        variant="ghost"
-                        className="text-white hover:bg-white/10 hover:text-white w-full rounded-none transition-all duration-200"
-                        onClick={() => handleNavLinkClick('/login')}
-                      >
-                        Log In
-                      </Button>
-                    </motion.div>
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -277,10 +263,28 @@ const Header = () => {
                         ease: "easeOut"
                       }}
                     >
+                      <NavLink
+                        name="Log In"
+                        path="/login"
+                        icon={LogIn}
+                        onClick={handleNavLinkClick}
+                        className="w-full justify-center rounded-none hover:text-white"
+                      />
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        duration: 0.3, 
+                        delay: (navLinks.length + (isAdmin ? 1 : 0) + 2) * 0.05,
+                        ease: "easeOut"
+                      }}
+                    >
                       <Button
-                        className="bg-lime-400 text-black font-bold w-full rounded-none hover:bg-lime-500 transition-all duration-200"
+                        className="flex items-center gap-2 bg-gradient-to-r from-lime-400 to-blue-500 text-black font-bold w-full rounded-none hover:from-lime-500 hover:to-blue-600 transition-all duration-200"
                         onClick={() => handleNavLinkClick('/signup')}
                       >
+                        <UserPlus className="w-4 h-4" />
                         Sign Up
                       </Button>
                     </motion.div>
@@ -291,22 +295,20 @@ const Header = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ 
                       duration: 0.3, 
-                      delay: (navLinks.length + (isAdmin ? 1 : 0)) * 0.05,
+                      delay: (navLinks.length + (isAdmin ? 1 : 0) + 1) * 0.05,
                       ease: "easeOut"
                     }}
                   >
                     <Button
                       variant="ghost"
-                      className="text-white hover:bg-white/10 hover:text-white w-full rounded-none transition-all duration-200"
+                      className="flex items-center gap-2 text-white hover:bg-white/10 hover:text-red-500 w-full justify-center rounded-none transition-all duration-200"
                       onClick={handleLogout}
                     >
-                        
+                      <LogOut className="w-4 h-4" />
                       Logout
                     </Button>
                   </motion.div>
                 )}
-
-            
               </div>
             </motion.div>
           )}

@@ -39,7 +39,7 @@ export default function Login() {
       {/* Left Side - Image + Quote (Hidden on mobile, visible on medium screens and up) */}
       <div className="hidden md:block md:w-1/2 relative overflow-hidden">
         <img
-          src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWNmaXlyeWR6Y2VtcGowY3k0ZThrYWlzZTA1eG1rYjZhM2M2cTA4OCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/aPjiWa9dUtBC/giphy.gif"
+          src="https://media.istockphoto.com/id/1302072956/photo/the-view-of-the-beach-in-havelock-island-andaman-and-nicobar-islands.jpg?s=612x612&w=0&k=20&c=gVPAd5sO-4Fge3DZPqITgp2on4B3RDCHoBw0g-8kJBM="
           alt="Traveler in Andaman"
           className="h-full w-full object-cover"
         />
@@ -72,7 +72,7 @@ export default function Login() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="alex.jordan@gmail.com"
+                  placeholder="Your Mail Address "
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -100,9 +100,7 @@ export default function Login() {
                     Remember me
                   </Label>
                 </div>
-                <Button variant="link" className="p-0 text-sm"> {/* Reduced padding for link button */}
-                  Forgot password?
-                </Button>
+               
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
@@ -113,16 +111,7 @@ export default function Login() {
                 <span className="absolute bg-white px-3 text-sm text-gray-500">OR</span>
                 <hr className="w-full border-t border-gray-300" />
               </div>
-              <Button
-                variant="outline"
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
-                  <path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path>
-                </svg>
-                Continue with Google
-              </Button>
+           
               <p className="text-sm text-center text-gray-600">
                 Don't have an account?{" "}
                 <Button variant="link" className="p-0 text-sm" onClick={() => navigate('/signup')}>
