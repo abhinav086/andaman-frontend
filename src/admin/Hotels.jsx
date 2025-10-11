@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Building, Plus, Upload, X, Calendar, User, Check, XCircle, Clock, Eye, RefreshCw, AlertCircle } from 'lucide-react';
+import { Edit, Trash2, Building, Plus, Upload, X, Calendar, User, Check, XCircle, Clock, Eye, RefreshCw, AlertCircle, Star, MapPin, Phone, Mail, Globe, CreditCard, DollarSign, Ruler, Users, Wifi, Coffee, Car, Utensils, Dumbbell, Snowflake, Sun, Shield, Heart, EyeOff, Search, Filter, TrendingUp, Image } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,8 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { API_BASE_URL } from '../config/api';
 
-// Booking Details Modal Component
+// Import Embla Carousel
+import useEmblaCarousel from 'embla-carousel-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react'; // Import arrows for navigation
+import Autoplay from 'embla-carousel-autoplay'; // Optional: for autoplay
+
+// --- Booking Details Modal Component (No changes) ---
 const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
+  // ... (Keep the original content of this component)
   const [status, setStatus] = useState(booking?.booking_status || '');
   const [paymentStatus, setPaymentStatus] = useState(booking?.payment_status || '');
   const [loading, setLoading] = useState(false);
@@ -21,7 +27,6 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('accessToken');
-      
       if (!token) {
         alert('No access token found. Please login again.');
         return;
@@ -67,43 +72,43 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <Label>Booking ID</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">{booking.booking_id}</p>
+              <Label className="text-gray-600">Booking ID</Label>
+              <p className="text-sm bg-gray-50 p-2 rounded border">{booking.booking_id}</p>
             </div>
             <div>
-              <Label>Reference</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">{booking.booking_reference || 'N/A'}</p>
+              <Label className="text-gray-600">Reference</Label>
+              <p className="text-sm bg-gray-50 p-2 rounded border">{booking.booking_reference || 'N/A'}</p>
             </div>
             <div>
-              <Label>User</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">{booking.user_name || 'N/A'}</p>
+              <Label className="text-gray-600">User</Label>
+              <p className="text-sm bg-gray-50 p-2 rounded border">{booking.user_name || 'N/A'}</p>
             </div>
             <div>
-              <Label>Hotel</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">{booking.hotel_name || 'N/A'}</p>
+              <Label className="text-gray-600">Hotel</Label>
+              <p className="text-sm bg-gray-50 p-2 rounded border">{booking.hotel_name || 'N/A'}</p>
             </div>
             <div>
-              <Label>Check-in</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">
+              <Label className="text-gray-600">Check-in</Label>
+              <p className="text-sm bg-gray-50 p-2 rounded border">
                 {booking.check_in_date ? new Date(booking.check_in_date).toLocaleDateString() : 'N/A'}
               </p>
             </div>
             <div>
-              <Label>Check-out</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">
+              <Label className="text-gray-600">Check-out</Label>
+              <p className="text-sm bg-gray-50 p-2 rounded border">
                 {booking.check_out_date ? new Date(booking.check_out_date).toLocaleDateString() : 'N/A'}
               </p>
             </div>
             <div>
-              <Label>Guests</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">{booking.num_guests || 'N/A'}</p>
+              <Label className="text-gray-600">Guests</Label>
+              <p className="text-sm bg-gray-50 p-2 rounded border">{booking.num_guests || 'N/A'}</p>
             </div>
             <div>
-              <Label>Amount</Label>
-              <p className="text-sm bg-gray-100 p-2 rounded">₹{booking.total_amount || 'N/A'}</p>
+              <Label className="text-gray-600">Amount</Label>
+              <p className="text-sm bg-gray-50 p-2 rounded border">₹{booking.total_amount || 'N/A'}</p>
             </div>
             <div>
-              <Label>Booking Status</Label>
+              <Label className="text-gray-600">Booking Status</Label>
               <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger>
                   <SelectValue />
@@ -118,7 +123,7 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
               </Select>
             </div>
             <div>
-              <Label>Payment Status</Label>
+              <Label className="text-gray-600">Payment Status</Label>
               <Select value={paymentStatus} onValueChange={setPaymentStatus}>
                 <SelectTrigger>
                   <SelectValue />
@@ -131,19 +136,17 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
               </Select>
             </div>
           </div>
-          
           <div>
-            <Label>Special Requests</Label>
-            <p className="text-sm bg-gray-100 p-2 rounded min-h-[40px]">
+            <Label className="text-gray-600">Special Requests</Label>
+            <p className="text-sm bg-gray-50 p-2 rounded border min-h-[40px]">
               {booking.special_requests || 'None'}
             </p>
           </div>
-          
           <div className="flex justify-end space-x-2 pt-4">
             <Button variant="outline" onClick={onClose} disabled={loading}>
               Close
             </Button>
-            <Button onClick={handleUpdate} disabled={loading}>
+            <Button onClick={handleUpdate} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
               {loading ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -160,8 +163,9 @@ const BookingDetailsModal = ({ booking, onClose, onUpdateStatus }) => {
   );
 };
 
-// Bookings Management Component
+// --- Bookings Management Component (No changes) ---
 const BookingsManagement = () => {
+  // ... (Keep the original content of this component)
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -181,35 +185,28 @@ const BookingsManagement = () => {
   const fetchBookings = async () => {
     setLoading(true);
     setApiError('');
-    
     try {
       const token = localStorage.getItem('accessToken');
-      
       if (!token) {
         setApiError('No access token found. Please login again.');
         setLoading(false);
         return;
       }
 
-      // Build query parameters
       const params = new URLSearchParams();
-      
       if (filter !== 'all') {
         params.append('status', filter);
       }
-      
       if (paymentFilter !== 'all') {
         params.append('payment_status', paymentFilter);
       }
-      
       params.append('limit', pagination.limit.toString());
       params.append('page', pagination.page.toString());
-      
+
       const url = `${API_BASE_URL}/api/bookings/hotel/all${params.toString() ? '?' + params.toString() : ''}`;
-      
-      console.log('Fetching bookings from:', url); // Debug log
-      console.log('Using token:', token ? 'Token present' : 'No token'); // Debug log
-      
+      console.log('Fetching bookings from:', url);
+      console.log('Using token:', token ? 'Token present' : 'No token');
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -217,44 +214,36 @@ const BookingsManagement = () => {
           'Content-Type': 'application/json'
         }
       });
-      
-      console.log('Response status:', response.status); // Debug log
-      console.log('Response headers:', Object.fromEntries(response.headers.entries())); // Debug log
-      
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       if (response.ok) {
         const data = await response.json();
-        console.log('Response data:', data); // Debug log
-        
+        console.log('Response ', data);
         setBookings(data.bookings || []);
-        
         if (data.pagination) {
           setPagination(prev => ({
             ...prev,
             total: data.pagination.total || 0
           }));
         }
-        
         setApiError('');
       } else {
-        // Try to get error message from response
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        
         try {
           const errorData = await response.json();
           errorMessage = errorData.msg || errorData.message || errorMessage;
-          console.log('Error response data:', errorData); // Debug log
+          console.log('Error response ', errorData);
         } catch (e) {
-          // If response is not JSON, use the text
           try {
             const errorText = await response.text();
             errorMessage = errorText || errorMessage;
-            console.log('Error response text:', errorText); // Debug log
+            console.log('Error response text:', errorText);
           } catch (e2) {
-            // Use default error message
-            console.log('Could not parse error response'); // Debug log
+            console.log('Could not parse error response');
           }
         }
-        
         console.error('Failed to fetch bookings:', errorMessage);
         setApiError(`Failed to fetch bookings: ${errorMessage}`);
       }
@@ -267,17 +256,15 @@ const BookingsManagement = () => {
   };
 
   const handleStatusUpdate = (updatedBooking) => {
-    setBookings(bookings.map(b => 
+    setBookings(bookings.map(b =>
       b.booking_id === updatedBooking.booking_id ? updatedBooking : b
     ));
   };
 
   const handleCancelBooking = async (bookingId) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
-    
     try {
       const token = localStorage.getItem('accessToken');
-      
       if (!token) {
         alert('No access token found. Please login again.');
         return;
@@ -297,7 +284,7 @@ const BookingsManagement = () => {
 
       if (response.ok) {
         const result = await response.json();
-        setBookings(bookings.map(b => 
+        setBookings(bookings.map(b =>
           b.booking_id === bookingId ? result.booking : b
         ));
         alert('Booking cancelled successfully');
@@ -338,7 +325,7 @@ const BookingsManagement = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <RefreshCw className="h-8 w-8 animate-spin mr-2" />
+        <RefreshCw className="h-8 w-8 animate-spin mr-2 text-blue-600" />
         <p>Loading bookings...</p>
       </div>
     );
@@ -356,11 +343,10 @@ const BookingsManagement = () => {
             </p>
           )}
         </div>
-        
         <div className="flex flex-col sm:flex-row gap-2">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-full sm:w-40">
-              <SelectValue />
+              <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
@@ -371,10 +357,9 @@ const BookingsManagement = () => {
               <SelectItem value="checked_out">Checked Out</SelectItem>
             </SelectContent>
           </Select>
-          
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
             <SelectTrigger className="w-full sm:w-40">
-              <SelectValue />
+              <SelectValue placeholder="Filter by payment" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Payments</SelectItem>
@@ -383,7 +368,6 @@ const BookingsManagement = () => {
               <SelectItem value="refunded">Refunded</SelectItem>
             </SelectContent>
           </Select>
-          
           <Button variant="outline" onClick={handleRetry}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -408,9 +392,9 @@ const BookingsManagement = () => {
                   <li>Verify your access token is valid and not expired</li>
                 </ul>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleRetry}
                 className="mt-3 text-red-600 border-red-300 hover:bg-red-50"
               >
@@ -427,8 +411,8 @@ const BookingsManagement = () => {
           <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
           <p className="text-gray-500">
-            {filter !== 'all' || paymentFilter !== 'all' 
-              ? 'No bookings match your current filters.' 
+            {filter !== 'all' || paymentFilter !== 'all'
+              ? 'No bookings match your current filters.'
               : 'No bookings have been made yet.'}
           </p>
         </div>
@@ -437,12 +421,12 @@ const BookingsManagement = () => {
       {bookings.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {bookings.map(booking => (
-            <Card key={booking.booking_id} className="overflow-hidden">
+            <Card key={booking.booking_id} className="overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <h4 className="font-bold text-base">{booking.hotel_name || 'Unknown Hotel'}</h4>
-                    <p className="text-sm text-gray-600">{booking.user_name || 'Unknown User'}</p>
+                    <p className="text-sm text-gray-600 flex items-center gap-1"><User className="h-3 w-3" /> {booking.user_name || 'Unknown User'}</p>
                   </div>
                   <div className="flex flex-col gap-1 items-end">
                     <Badge variant={getStatusBadgeVariant(booking.booking_status)}>
@@ -455,7 +439,6 @@ const BookingsManagement = () => {
                     )}
                   </div>
                 </div>
-                
                 <div className="space-y-2">
                   {booking.check_in_date && booking.check_out_date && (
                     <div className="flex items-center text-sm">
@@ -463,27 +446,23 @@ const BookingsManagement = () => {
                       {new Date(booking.check_in_date).toLocaleDateString()} - {new Date(booking.check_out_date).toLocaleDateString()}
                     </div>
                   )}
-                  
                   {booking.num_guests && (
                     <div className="flex items-center text-sm">
-                      <User className="h-4 w-4 mr-2 text-gray-500" />
+                      <Users className="h-4 w-4 mr-2 text-gray-500" />
                       {booking.num_guests} {booking.num_guests === 1 ? 'Guest' : 'Guests'}
                     </div>
                   )}
-                  
                   {booking.total_amount && (
-                    <div className="text-sm font-semibold">₹{booking.total_amount}</div>
+                    <div className="text-sm font-semibold text-green-600 flex items-center gap-1"><DollarSign className="h-3 w-3" /> ₹{booking.total_amount}</div>
                   )}
-                  
                   <div className="text-xs text-gray-500">
                     ID: {booking.booking_id}
                     {booking.booking_reference && ` | Ref: ${booking.booking_reference}`}
                   </div>
                 </div>
-                
                 <div className="mt-4 flex space-x-2">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     variant="outline"
                     onClick={() => setSelectedBooking(booking)}
                     className="flex-1"
@@ -492,8 +471,8 @@ const BookingsManagement = () => {
                     View
                   </Button>
                   {booking.booking_status === 'pending' && (
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="destructive"
                       onClick={() => handleCancelBooking(booking.booking_id)}
                     >
@@ -509,8 +488,8 @@ const BookingsManagement = () => {
       )}
 
       {selectedBooking && (
-        <BookingDetailsModal 
-          booking={selectedBooking} 
+        <BookingDetailsModal
+          booking={selectedBooking}
           onClose={() => setSelectedBooking(null)}
           onUpdateStatus={handleStatusUpdate}
         />
@@ -519,7 +498,133 @@ const BookingsManagement = () => {
   );
 };
 
+// --- Hotel Card Component with Slider ---
+// --- Hotel Card Component with Slider (Corrected) ---
+const HotelCard = ({ hotel, onEdit, onDelete }) => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
+
+  const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
+  const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
+
+  const scrollPrev = React.useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = React.useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+  const onSelect = React.useCallback(() => {
+    if (!emblaApi) return;
+    setPrevBtnDisabled(!emblaApi.canScrollPrev());
+    setNextBtnDisabled(!emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  React.useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('reInit', onSelect);
+    emblaApi.on('select', onSelect);
+  }, [emblaApi, onSelect]);
+
+  return (
+    <Card key={hotel.hotel_id} className="overflow-hidden flex flex-col border border-gray-200 hover:shadow-md transition-shadow h-full">
+      {/* Image Slider Section */}
+      <div className="relative overflow-hidden">
+        {hotel.photos && hotel.photos.length > 0 ? (
+          <div className="embla" ref={emblaRef}>
+            <div className="embla__container flex">
+              {hotel.photos.map((photo, index) => (
+                <div key={index} className="embla__slide flex-shrink-0 w-full h-48">
+                  <img
+                    src={photo}
+                    alt={`${hotel.name} - ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+            {/* Navigation Buttons */}
+            <Button
+              className="embla__button embla__button--prev absolute top-1/2 left-2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-1"
+              onClick={scrollPrev}
+              disabled={prevBtnDisabled}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              className="embla__button embla__button--next absolute top-1/2 right-2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-1"
+              onClick={scrollNext}
+              disabled={nextBtnDisabled}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+            <Image className="h-12 w-12 text-gray-400" />
+          </div>
+        )}
+        <div className="absolute top-2 right-2 flex gap-1">
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 w-8 p-0 bg-black/50 hover:bg-black/70 text-white"
+            onClick={() => onEdit(hotel)}
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            className="h-8 w-8 p-0 bg-black/50 hover:bg-black/70"
+            onClick={() => onDelete(hotel.hotel_id)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      <CardContent className="p-4 flex-grow">
+        <div className="flex justify-between items-start">
+          <h3 className="font-bold text-lg truncate">{hotel.name}</h3> {/* Added truncate for long names */}
+          <div className="flex flex-col items-end">
+            <Badge variant="outline" className="text-sm">
+              <Star className="h-3 w-3 mr-1 text-yellow-500" /> {hotel.star_rating || 'N/A'}★
+            </Badge>
+            {hotel.base_price && (
+              <span className="text-sm font-semibold text-green-600 mt-1 flex items-center gap-1">
+                <DollarSign className="h-3 w-3" /> ₹{hotel.base_price} / {hotel.currency}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center mt-1 text-sm text-gray-600">
+          <MapPin className="h-4 w-4 mr-1" />
+          {hotel.city}, {hotel.country}
+        </div>
+        <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+          {hotel.description || 'No description available'}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-1">
+          {hotel.amenities?.slice(0, 3).map((amenity, index) => (
+            <Badge key={index} variant="secondary" className="text-xs">
+              {amenity}
+            </Badge>
+          ))}
+          {hotel.amenities && hotel.amenities.length > 3 && (
+            <Badge variant="outline" className="text-xs">
+              +{hotel.amenities.length - 3} more
+            </Badge>
+          )}
+        </div>
+        <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
+          <span className="flex items-center gap-1"><Image className="h-4 w-4" /> {hotel.photos?.length || 0} photos</span>
+          <span className="flex items-center gap-1"><Star className="h-4 w-4" /> {hotel.average_rating && typeof hotel.average_rating === 'number'
+            ? hotel.average_rating.toFixed(1)
+            : 'N/A'}★ ({hotel.total_reviews || 0})</span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 const Hotels = () => {
+  // ... (Keep all other state variables and functions as they were)
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newHotel, setNewHotel] = useState({
@@ -539,7 +644,9 @@ const Hotels = () => {
     website_url: '',
     booking_link: '',
     amenities: [],
-    room_types: []
+    room_types: [],
+    base_price: '',
+    currency: 'INR'
   });
   const [errors, setErrors] = useState({});
   const [photos, setPhotos] = useState([]);
@@ -557,6 +664,7 @@ const Hotels = () => {
   }, [activeTab]);
 
   const fetchHotels = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem('accessToken');
       const response = await fetch(`${API_BASE_URL}/api/hotels`, {
@@ -598,7 +706,6 @@ const Hotels = () => {
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     setPhotos(files);
-    // Create previews
     const previews = files.map(file => URL.createObjectURL(file));
     setPreviewPhotos(previews);
   };
@@ -606,7 +713,6 @@ const Hotels = () => {
   const handleEditFileChange = (e) => {
     const files = Array.from(e.target.files);
     setEditPhotos(files);
-    // Create previews
     const previews = files.map(file => URL.createObjectURL(file));
     setEditPreviewPhotos(previews);
   };
@@ -638,30 +744,27 @@ const Hotels = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Helper function to sanitize form data
   const sanitizeFormData = (data) => {
     const sanitized = {};
     Object.keys(data).forEach(key => {
       const value = data[key];
-      // Handle different field types
       if (key === 'amenities' || key === 'room_types') {
-        // Arrays should be preserved
         sanitized[key] = value || [];
       } else if (key === 'latitude' || key === 'longitude') {
-        // Only include if it's a valid number
+        if (value !== '' && value !== null && value !== undefined && !isNaN(parseFloat(value))) {
+          sanitized[key] = parseFloat(value);
+        }
+      } else if (key === 'base_price') {
         if (value !== '' && value !== null && value !== undefined && !isNaN(parseFloat(value))) {
           sanitized[key] = parseFloat(value);
         }
       } else if (key === 'website_url' || key === 'booking_link') {
-        // Only include if it's a valid URL or empty
         if (value && value.trim() !== '') {
           sanitized[key] = value.trim();
         }
       } else if (key === 'star_rating') {
-        // Ensure it's a number
         sanitized[key] = parseInt(value) || 3;
       } else if (value !== null && value !== undefined && value !== '') {
-        // Include non-empty values
         sanitized[key] = value;
       }
     });
@@ -673,18 +776,14 @@ const Hotels = () => {
     try {
       const token = localStorage.getItem('accessToken');
       const formData = new FormData();
-      // Sanitize the hotel data before adding to form
       const sanitizedData = sanitizeFormData(newHotel);
-      // Add text fields (excluding arrays for now)
       Object.keys(sanitizedData).forEach(key => {
         if (key !== 'amenities' && key !== 'room_types') {
           formData.append(key, sanitizedData[key]);
         }
       });
-      // Add array fields as JSON strings
       formData.append('amenities', JSON.stringify(sanitizedData.amenities || []));
       formData.append('room_types', JSON.stringify(sanitizedData.room_types || []));
-      // Add photos
       photos.forEach(photo => {
         formData.append('photos', photo);
       });
@@ -734,7 +833,9 @@ const Hotels = () => {
       website_url: '',
       booking_link: '',
       amenities: [],
-      room_types: []
+      room_types: [],
+      base_price: '',
+      currency: 'INR'
     });
     setPhotos([]);
     setPreviewPhotos([]);
@@ -744,22 +845,16 @@ const Hotels = () => {
     try {
       const token = localStorage.getItem('accessToken');
       const formData = new FormData();
-      // Sanitize the editing hotel data
       const sanitizedData = sanitizeFormData(editingHotel);
-      // Add text fields (excluding photos and arrays)
       Object.keys(sanitizedData).forEach(key => {
         if (key === 'amenities' || key === 'room_types') {
-          // Add array fields as JSON strings
           formData.append(key, JSON.stringify(sanitizedData[key] || []));
         } else if (key !== 'photos') {
-          // Skip photos - handle separately
           formData.append(key, sanitizedData[key]);
         }
       });
-      // Handle existing photos - send the current photos array (after any removals)
       const remainingPhotos = editingHotel.photos || [];
-      formData.append('existing_photos', JSON.stringify(remainingPhotos));
-      // Add new photos
+      formData.append('photos', JSON.stringify(remainingPhotos));
       editPhotos.forEach(photo => {
         formData.append('photos', photo);
       });
@@ -778,7 +873,7 @@ const Hotels = () => {
       }
       try {
         const result = JSON.parse(responseText);
-        setHotels(hotels.map(hotel => 
+        setHotels(hotels.map(hotel =>
           hotel.hotel_id === editingHotel.hotel_id ? result.hotel : hotel
         ));
         setEditingHotel(null);
@@ -796,7 +891,7 @@ const Hotels = () => {
   };
 
   const handleDeleteHotel = async (hotelId) => {
-    if (!window.confirm('Are you sure you want to delete this hotel?')) return;
+    if (!window.confirm('Are you sure you want to delete this hotel? This action cannot be undone.')) return;
     try {
       const token = localStorage.getItem('accessToken');
       const response = await fetch(`${API_BASE_URL}/api/hotels/${hotelId}`, {
@@ -828,24 +923,25 @@ const Hotels = () => {
   if (loading && activeTab === 'hotels') {
     return (
       <div className="flex justify-center items-center h-64">
+        <RefreshCw className="h-8 w-8 animate-spin mr-2 text-blue-600" />
         <p>Loading hotels...</p>
       </div>
     );
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <Card className="w-full border-0 shadow-none">
+      <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gray-50 p-4 sm:p-6 rounded-lg">
         <div>
           <CardTitle className="text-2xl">Hotel Management</CardTitle>
           <CardDescription>Manage your hotels and bookings</CardDescription>
         </div>
-        
         {/* Tab Navigation */}
         <div className="flex space-x-2">
           <Button
             variant={activeTab === 'hotels' ? 'default' : 'outline'}
             onClick={() => setActiveTab('hotels')}
+            className="flex items-center gap-2"
           >
             <Building className="mr-2 h-4 w-4" />
             Hotels
@@ -853,19 +949,18 @@ const Hotels = () => {
           <Button
             variant={activeTab === 'bookings' ? 'default' : 'outline'}
             onClick={() => setActiveTab('bookings')}
+            className="flex items-center gap-2"
           >
             <Calendar className="mr-2 h-4 w-4" />
             Bookings
           </Button>
         </div>
       </CardHeader>
-      
       {apiError && (
         <div className="mx-6 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
           {apiError}
         </div>
       )}
-      
       <CardContent>
         {activeTab === 'hotels' ? (
           <>
@@ -873,11 +968,11 @@ const Hotels = () => {
             <div className="mb-6">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button>
+                  <Button className="bg-green-600 hover:bg-green-700 flex items-center gap-2">
                     <Plus className="mr-2 h-4 w-4" /> Add Hotel
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Add New Hotel</DialogTitle>
                   </DialogHeader>
@@ -887,8 +982,8 @@ const Hotels = () => {
                         {apiError}
                       </div>
                     )}
-                    <div className="grid grid-cols-1 gap-4">
-                      <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
                         <Label htmlFor="name">Hotel Name *</Label>
                         <Input
                           id="name"
@@ -921,7 +1016,7 @@ const Hotels = () => {
                         />
                         {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
                       </div>
-                      <div>
+                      <div className="md:col-span-2">
                         <Label htmlFor="address">Address *</Label>
                         <Input
                           id="address"
@@ -955,6 +1050,41 @@ const Hotels = () => {
                             {[1, 2, 3, 4, 5].map(rating => (
                               <SelectItem key={rating} value={rating.toString()}>{rating} Star{rating > 1 ? 's' : ''}</SelectItem>
                             ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="base_price">Base Price (₹)</Label>
+                        <Input
+                          id="base_price"
+                          name="base_price"
+                          type="number"
+                          step="0.01"
+                          value={newHotel.base_price}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="currency">Currency</Label>
+                        <Select
+                          name="currency"
+                          value={newHotel.currency}
+                          onValueChange={(value) => setNewHotel(prev => ({...prev, currency: value}))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="INR">INR</SelectItem>
+                            <SelectItem value="USD">USD</SelectItem>
+                            <SelectItem value="EUR">EUR</SelectItem>
+                            <SelectItem value="GBP">GBP</SelectItem>
+                            <SelectItem value="AUD">AUD</SelectItem>
+                            <SelectItem value="CAD">CAD</SelectItem>
+                            <SelectItem value="JPY">JPY</SelectItem>
+                            <SelectItem value="CHF">CHF</SelectItem>
+                            <SelectItem value="CNY">CNY</SelectItem>
+                            <SelectItem value="AED">AED</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1043,7 +1173,7 @@ const Hotels = () => {
                           onChange={handleInputChange}
                         />
                       </div>
-                      <div>
+                      <div className="md:col-span-2">
                         <Label htmlFor="description">Description</Label>
                         <Textarea
                           id="description"
@@ -1053,7 +1183,7 @@ const Hotels = () => {
                           rows={3}
                         />
                       </div>
-                      <div>
+                      <div className="md:col-span-2">
                         <Label htmlFor="amenities">Amenities (comma separated)</Label>
                         <Input
                           id="amenities"
@@ -1066,7 +1196,7 @@ const Hotels = () => {
                           placeholder="WiFi, Pool, Gym, etc."
                         />
                       </div>
-                      <div>
+                      <div className="md:col-span-2">
                         <Label htmlFor="room_types">Room Types (comma separated)</Label>
                         <Input
                           id="room_types"
@@ -1079,7 +1209,7 @@ const Hotels = () => {
                           placeholder="Standard, Deluxe, Suite, etc."
                         />
                       </div>
-                      <div>
+                      <div className="md:col-span-2">
                         <Label htmlFor="photos">Photos</Label>
                         <div className="flex items-center gap-2">
                           <Input
@@ -1094,13 +1224,13 @@ const Hotels = () => {
                           </Button>
                         </div>
                         {previewPhotos.length > 0 && (
-                          <div className="mt-2 grid grid-cols-3 gap-2">
+                          <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                             {previewPhotos.map((preview, index) => (
                               <div key={index} className="relative group">
-                                <img 
-                                  src={preview} 
-                                  alt={`Preview ${index}`} 
-                                  className="w-full h-24 object-cover rounded"
+                                <img
+                                  src={preview}
+                                  alt={`Preview ${index}`}
+                                  className="w-full h-24 object-cover rounded border"
                                 />
                                 <Button
                                   type="button"
@@ -1118,86 +1248,23 @@ const Hotels = () => {
                       </div>
                     </div>
                     <div className="flex justify-end gap-2 pt-4">
-                      <Button onClick={handleAddHotel} className="bg-green-600 hover:bg-green-700">
-                        Add Hotel
+                      <Button onClick={handleAddHotel} className="bg-green-600 hover:bg-green-700 flex items-center gap-2">
+                        <Plus className="h-4 w-4" /> Add Hotel
                       </Button>
                     </div>
                   </div>
                 </DialogContent>
               </Dialog>
             </div>
-
-            {/* Hotel Cards */}
+            {/* Hotel Cards - Use the new HotelCard component */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {hotels.map((hotel) => (
-                <Card key={hotel.hotel_id} className="overflow-hidden flex flex-col">
-                  <div className="relative">
-                    {hotel.photos && hotel.photos.length > 0 ? (
-                      <img 
-                        src={hotel.photos[0]} 
-                        alt={hotel.name} 
-                        className="w-full h-48 object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                        <Building className="h-12 w-12 text-gray-400" />
-                      </div>
-                    )}
-                    <div className="absolute top-2 right-2 flex gap-1">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="h-8 w-8 p-0"
-                        onClick={() => startEdit(hotel)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="h-8 w-8 p-0"
-                        onClick={() => handleDeleteHotel(hotel.hotel_id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <CardContent className="p-4 flex-grow">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-lg">{hotel.name}</h3>
-                      <Badge variant="outline" className="text-sm">
-                        {hotel.star_rating || 'N/A'}★
-                      </Badge>
-                    </div>
-                    <div className="flex items-center mt-1 text-sm text-gray-600">
-                      <span className="mr-1">📍</span>
-                      {hotel.city}, {hotel.country}
-                    </div>
-                    <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                      {hotel.description || 'No description available'}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {hotel.amenities?.slice(0, 3).map((amenity, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {amenity}
-                        </Badge>
-                      ))}
-                      {hotel.amenities && hotel.amenities.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{hotel.amenities.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="mt-4 flex justify-between items-center">
-                      <span className="text-sm text-gray-500">
-                        {hotel.photos?.length || 0} photos
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        {hotel.total_reviews || 0} reviews
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
+                <HotelCard
+                  key={hotel.hotel_id}
+                  hotel={hotel}
+                  onEdit={startEdit}
+                  onDelete={handleDeleteHotel}
+                />
               ))}
             </div>
           </>
@@ -1205,11 +1272,10 @@ const Hotels = () => {
           <BookingsManagement />
         )}
       </CardContent>
-      
       {/* Edit Hotel Dialog - Responsive */}
       {editingHotel && (
         <Dialog open={!!editingHotel} onOpenChange={() => setEditingHotel(null)}>
-          <DialogContent className="w-[95vw] max-w-2xl h-[95vh] max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0">
+          <DialogContent className="w-[95vw] max-w-3xl h-[95vh] max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0">
             <DialogHeader className="p-4 sm:p-6 pb-2 sm:pb-4 border-b shrink-0">
               <DialogTitle>Edit Hotel</DialogTitle>
             </DialogHeader>
@@ -1221,8 +1287,8 @@ const Hotels = () => {
                     {apiError}
                   </div>
                 )}
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
                     <Label htmlFor="edit-name">Hotel Name</Label>
                     <Input
                       id="edit-name"
@@ -1232,29 +1298,27 @@ const Hotels = () => {
                       className="w-full"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-city">City</Label>
-                      <Input
-                        id="edit-city"
-                        name="city"
-                        value={editingHotel.city || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-country">Country</Label>
-                      <Input
-                        id="edit-country"
-                        name="country"
-                        value={editingHotel.country || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="edit-city">City</Label>
+                    <Input
+                      id="edit-city"
+                      name="city"
+                      value={editingHotel.city || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
                   </div>
                   <div>
+                    <Label htmlFor="edit-country">Country</Label>
+                    <Input
+                      id="edit-country"
+                      name="country"
+                      value={editingHotel.country || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
                     <Label htmlFor="edit-address">Address</Label>
                     <Input
                       id="edit-address"
@@ -1264,86 +1328,115 @@ const Hotels = () => {
                       className="w-full"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-zip_code">ZIP Code</Label>
-                      <Input
-                        id="edit-zip_code"
-                        name="zip_code"
-                        value={editingHotel.zip_code || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-star_rating">Star Rating</Label>
-                      <Select
-                        name="star_rating"
-                        value={editingHotel.star_rating?.toString() || '3'}
-                        onValueChange={(value) => setEditingHotel(prev => ({...prev, star_rating: parseInt(value)}))}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[1, 2, 3, 4, 5].map(rating => (
-                            <SelectItem key={rating} value={rating.toString()}>{rating} Star{rating > 1 ? 's' : ''}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div>
+                    <Label htmlFor="edit-zip_code">ZIP Code</Label>
+                    <Input
+                      id="edit-zip_code"
+                      name="zip_code"
+                      value={editingHotel.zip_code || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-latitude">Latitude</Label>
-                      <Input
-                        id="edit-latitude"
-                        name="latitude"
-                        type="number"
-                        step="any"
-                        value={editingHotel.latitude || ''}
-                        onChange={handleEditInputChange}
-                        placeholder="e.g. 40.7128"
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-longitude">Longitude</Label>
-                      <Input
-                        id="edit-longitude"
-                        name="longitude"
-                        type="number"
-                        step="any"
-                        value={editingHotel.longitude || ''}
-                        onChange={handleEditInputChange}
-                        placeholder="e.g. -74.0060"
-                        className="w-full"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="edit-star_rating">Star Rating</Label>
+                    <Select
+                      name="star_rating"
+                      value={editingHotel.star_rating?.toString() || '3'}
+                      onValueChange={(value) => setEditingHotel(prev => ({...prev, star_rating: parseInt(value)}))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5].map(rating => (
+                          <SelectItem key={rating} value={rating.toString()}>{rating} Star{rating > 1 ? 's' : ''}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-contact_phone">Phone</Label>
-                      <Input
-                        id="edit-contact_phone"
-                        name="contact_phone"
-                        type="tel"
-                        value={editingHotel.contact_phone || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-contact_email">Email</Label>
-                      <Input
-                        id="edit-contact_email"
-                        name="contact_email"
-                        type="email"
-                        value={editingHotel.contact_email || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="edit-base_price">Base Price (₹)</Label>
+                    <Input
+                      id="edit-base_price"
+                      name="base_price"
+                      type="number"
+                      step="0.01"
+                      value={editingHotel.base_price || ''}
+                      onChange={handleEditInputChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-currency">Currency</Label>
+                    <Select
+                      name="currency"
+                      value={editingHotel.currency || 'INR'}
+                      onValueChange={(value) => setEditingHotel(prev => ({...prev, currency: value}))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="INR">INR</SelectItem>
+                        <SelectItem value="USD">USD</SelectItem>
+                        <SelectItem value="EUR">EUR</SelectItem>
+                        <SelectItem value="GBP">GBP</SelectItem>
+                        <SelectItem value="AUD">AUD</SelectItem>
+                        <SelectItem value="CAD">CAD</SelectItem>
+                        <SelectItem value="JPY">JPY</SelectItem>
+                        <SelectItem value="CHF">CHF</SelectItem>
+                        <SelectItem value="CNY">CNY</SelectItem>
+                        <SelectItem value="AED">AED</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-latitude">Latitude</Label>
+                    <Input
+                      id="edit-latitude"
+                      name="latitude"
+                      type="number"
+                      step="any"
+                      value={editingHotel.latitude || ''}
+                      onChange={handleEditInputChange}
+                      placeholder="e.g. 40.7128"
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-longitude">Longitude</Label>
+                    <Input
+                      id="edit-longitude"
+                      name="longitude"
+                      type="number"
+                      step="any"
+                      value={editingHotel.longitude || ''}
+                      onChange={handleEditInputChange}
+                      placeholder="e.g. -74.0060"
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-contact_phone">Phone</Label>
+                    <Input
+                      id="edit-contact_phone"
+                      name="contact_phone"
+                      type="tel"
+                      value={editingHotel.contact_phone || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-contact_email">Email</Label>
+                    <Input
+                      id="edit-contact_email"
+                      name="contact_email"
+                      type="email"
+                      value={editingHotel.contact_email || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
                   </div>
                   <div>
                     <Label htmlFor="edit-website_url">Website</Label>
@@ -1369,31 +1462,29 @@ const Hotels = () => {
                       className="w-full"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="edit-check_in_time">Check-in Time</Label>
-                      <Input
-                        id="edit-check_in_time"
-                        name="check_in_time"
-                        type="time"
-                        value={editingHotel.check_in_time || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-check_out_time">Check-out Time</Label>
-                      <Input
-                        id="edit-check_out_time"
-                        name="check_out_time"
-                        type="time"
-                        value={editingHotel.check_out_time || ''}
-                        onChange={handleEditInputChange}
-                        className="w-full"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="edit-check_in_time">Check-in Time</Label>
+                    <Input
+                      id="edit-check_in_time"
+                      name="check_in_time"
+                      type="time"
+                      value={editingHotel.check_in_time || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
                   </div>
                   <div>
+                    <Label htmlFor="edit-check_out_time">Check-out Time</Label>
+                    <Input
+                      id="edit-check_out_time"
+                      name="check_out_time"
+                      type="time"
+                      value={editingHotel.check_out_time || ''}
+                      onChange={handleEditInputChange}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
                     <Label htmlFor="edit-description">Description</Label>
                     <Textarea
                       id="edit-description"
@@ -1404,7 +1495,7 @@ const Hotels = () => {
                       className="w-full resize-none"
                     />
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <Label htmlFor="edit-amenities">Amenities (comma separated)</Label>
                     <Input
                       id="edit-amenities"
@@ -1418,7 +1509,7 @@ const Hotels = () => {
                       className="w-full"
                     />
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <Label htmlFor="edit-room_types">Room Types (comma separated)</Label>
                     <Input
                       id="edit-room_types"
@@ -1432,7 +1523,7 @@ const Hotels = () => {
                       className="w-full"
                     />
                   </div>
-                  <div>
+                  <div className="md:col-span-2">
                     <Label htmlFor="edit-photos">Add Photos</Label>
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                       <Input
@@ -1454,12 +1545,12 @@ const Hotels = () => {
                         {editingHotel.photos && editingHotel.photos.length > 0 && (
                           <div>
                             <p className="text-sm text-gray-600 mb-2 font-medium">Current Photos:</p>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                               {editingHotel.photos.map((photo, index) => (
                                 <div key={`existing-${index}`} className="relative group">
-                                  <img 
-                                    src={photo} 
-                                    alt={`Existing ${index}`} 
+                                  <img
+                                    src={photo}
+                                    alt={`Existing ${index}`}
                                     className="w-full h-20 sm:h-24 object-cover rounded border"
                                   />
                                   <Button
@@ -1480,12 +1571,12 @@ const Hotels = () => {
                         {editPreviewPhotos.length > 0 && (
                           <div>
                             <p className="text-sm text-gray-600 mb-2 font-medium">New Photos to Add:</p>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                               {editPreviewPhotos.map((photo, index) => (
                                 <div key={`new-${index}`} className="relative group">
-                                  <img 
-                                    src={photo} 
-                                    alt={`New Preview ${index}`} 
+                                  <img
+                                    src={photo}
+                                    alt={`New Preview ${index}`}
                                     className="w-full h-20 sm:h-24 object-cover rounded border-2 border-green-200"
                                   />
                                   <Button
@@ -1511,19 +1602,19 @@ const Hotels = () => {
             {/* Fixed footer with action buttons */}
             <div className="p-4 sm:p-6 pt-2 sm:pt-4 border-t bg-white shrink-0">
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-end">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setEditingHotel(null)}
                   className="w-full sm:w-auto order-2 sm:order-1"
                 >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   onClick={handleUpdateHotel}
-                  className="bg-green-600 hover:bg-green-700 w-full sm:w-auto order-1 sm:order-2"
+                  className="bg-green-600 hover:bg-green-700 w-full sm:w-auto order-1 sm:order-2 flex items-center gap-2"
                 >
-                  Update Hotel
+                  <Edit className="h-4 w-4" /> Update Hotel
                 </Button>
               </div>
             </div>

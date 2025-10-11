@@ -62,7 +62,7 @@ const Footer = () => {
               <img 
                 src={logo} 
                 alt="Andaman Trip Logo" 
-                className="h-8 w-8 object-contain" 
+                className="h-8 w-8 object-contain flex-shrink-0" 
               />
               <h2 style={customFontStyle2} className="text-xl sm:text-2xl font-semibold text-gray-900">
                 Make Andaman Trip
@@ -112,7 +112,7 @@ const Footer = () => {
           </div>
 
           {/* Column 3: Resources / Contact */}
-          <div>
+          <div className="lg:col-span-1">
             <h3 className="text-sm font-medium mb-4 text-gray-900">Resources</h3>
             <div className="space-y-3">
               <div className="flex items-start gap-2">
