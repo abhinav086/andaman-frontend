@@ -72,6 +72,7 @@ function AppContent() {
           <Route path="/admin-settings" element={<AdminPanel />}>
             <Route index element={<AdminSettings />} />
           </Route>
+          
         </Routes>
       </main>
       {!hideHeader && <Footer />}

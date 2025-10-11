@@ -75,7 +75,7 @@ const Header = () => {
   // Updated navigation links with icons
   const navLinks = [
     { name: "About Us", path: "/about", icon: Users },
-    { name: "Services", path: "/services", icon: Briefcase },
+    // { name: "Services", path: "/services", icon: Briefcase },
     { name: "Blog", path: "/blog", icon: Rss },
     { name: "Contact Us", path: "/contact", icon: Mail }
   ];

@@ -95,7 +95,7 @@ export default function BlogPost() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 pt-[104px] py-8">
       <Button 
         variant="ghost" 
         onClick={() => navigate('/blog')}
@@ -169,11 +169,12 @@ export default function BlogPost() {
               </CardHeader>
               
               <CardContent>
+                {/* Full-size blog image */}
                 {blog.cover_image && (
                   <img 
                     src={blog.cover_image}
                     alt={blog.title}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
+                    className="w-full h-64 md:h-96 object-cover rounded-lg mb-6"
                   />
                 )}
 

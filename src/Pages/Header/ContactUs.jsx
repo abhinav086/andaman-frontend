@@ -18,198 +18,237 @@ import {
   Calendar,
 } from "lucide-react";
 
+// Import background image
+import backgroundImage from "../../assets/twentyfour.jpeg";
+
+// Custom font styles
+const customFontStyle = {
+  fontFamily: "'Neue Montreal Regular', sans-serif",
+  fontWeight: 600,
+  fontStyle: "normal",
+};
+
+const customFontStyle2 = {
+  fontFamily: "'Travel October', sans-serif",
+  fontWeight: 600,
+  fontStyle: "normal",
+};
+
 export default function ContactUs() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-teal-500 text-transparent bg-clip-text">
-          Get in Touch
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Have questions about your Andaman trip? Our friendly support team is here to help you plan the perfect getaway.
-          Reach out to us through any of the channels below.
-        </p>
-      </div>
+    <div
+      className="relative min-h-screen flex pt-[20px] flex-col"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/50"></div>
 
-      {/* Contact Info Cards */}
-      <div className="grid md:grid-cols-3 gap-8 mb-16">
-        <Card className="border-l-4 border-blue-500 shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Phone className="h-6 w-6 text-blue-600" />
-              </div>
-              <CardTitle className="text-xl">Call Us</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4 text-muted-foreground">For immediate assistance, call our 24/7 support line:</p>
-            <p className="text-2xl font-bold text-blue-600 mb-2">+91 98765 43210</p>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Clock className="h-4 w-4 mr-2 text-amber-500" />
-              <span>Available 24/7, 365 days a year</span>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Content Container */}
+      <div className="relative z-10 container mx-auto px-4 pt-[104px] pb-12 flex flex-col md:flex-row gap-8">
+        
+        {/* Left Side: Headline + Info */}
+        <div className="flex-1 text-white space-y-6">
+          <h1 
+            className="text-4xl md:text-5xl font-bold leading-tight"
+            style={customFontStyle2} // Applied Travel October font
+          >
+            You Have Questions,<br />
+            We Have Answers
+          </h1>
+          <p 
+            className="text-lg max-w-xl opacity-90"
+            style={customFontStyle} // Applied Neue Montreal Regular font
+          >
+            Discover experiences you won't find anywhere else — thoughtfully designed to immerse you in the heart of the destination. Soulful stories waiting to be lived.
+          </p>
 
-        <Card className="border-l-4 border-emerald-500 shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 rounded-lg">
-                <MailIcon className="h-6 w-6 text-emerald-600" />
-              </div>
-              <CardTitle className="text-xl">Email Us</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4 text-muted-foreground">Send us an email for general inquiries or support:</p>
-            <p className="text-2xl font-bold text-emerald-600 mb-2">support@andamantravel.com</p>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Clock className="h-4 w-4 mr-2 text-amber-500" />
-              <span>We respond within 24 hours</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-l-4 border-amber-500 shadow-lg hover:shadow-xl transition-shadow">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <MapPin className="h-6 w-6 text-amber-600" />
-              </div>
-              <CardTitle className="text-xl">Visit Us</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="mb-4 text-muted-foreground">Visit our office in Port Blair:</p>
-            <div className="space-y-2 mb-4">
-              <p className="text-sm">
-                <strong>Andaman Travel Headquarters</strong><br />
+          {/* Contact Info Grid */}
+          <div className="grid md:grid-cols-2 gap-8 mt-12 text-sm">
+            {/* Location */}
+            <div>
+              <h3 
+                className="font-semibold mb-2"
+                style={customFontStyle2} // Applied Travel October font
+              >
+                Location
+              </h3>
+              <p 
+                className="opacity-80"
+                style={customFontStyle} // Applied Neue Montreal Regular font
+              >
+                Andaman Travel Headquarters<br />
                 Main Road, Port Blair<br />
                 Andaman & Nicobar Islands<br />
-                India - 744101
+                India - 744101<br /><br />
+                Monday–Sunday | 08:00 – 22:00 (local time)
               </p>
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-              <span>Mon-Sat 9AM–6PM</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Live Chat Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl p-8 mb-16 border border-blue-100">
-        <div className="flex flex-col md:flex-row items-center gap-8">
-          <div className="flex-1 text-center md:text-left">
-            <h3 className="text-2xl font-bold mb-3">Need Immediate Help?</h3>
-            <p className="text-muted-foreground mb-4">
-              Chat with our support team in real-time for urgent booking issues or travel questions.
-            </p>
-            <Button size="lg" className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600">
-              <MessageCircle className="mr-2 h-5 w-5" />
-              Start Live Chat
-            </Button>
-          </div>
-          <div className="flex items-center justify-center">
-            <div className="bg-white p-6 rounded-full shadow-lg">
-              <MessageCircle className="h-16 w-16 text-blue-500" />
+            {/* Social Media */}
+            <div>
+              <h3 
+                className="font-semibold mb-2"
+                style={customFontStyle2} // Applied Travel October font
+              >
+                Social Media
+              </h3>
+              <div 
+                className="space-y-1 opacity-80"
+                style={customFontStyle} // Applied Neue Montreal Regular font
+              >
+                <p>Instagram</p>
+                <p>LinkedIn</p>
+                <p>Facebook</p>
+                <p>TikTok</p>
+              </div>
+            </div>
+
+            {/* Email */}
+            <div>
+              <h3 
+                className="font-semibold mb-2"
+                style={customFontStyle2} // Applied Travel October font
+              >
+                Email
+              </h3>
+              <p 
+                className="opacity-80"
+                style={customFontStyle} // Applied Neue Montreal Regular font
+              >
+                support@andamantravel.com
+              </p>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h3 
+                className="font-semibold mb-2"
+                style={customFontStyle2} // Applied Travel October font
+              >
+                Contact
+              </h3>
+              <p 
+                className="opacity-80"
+                style={customFontStyle} // Applied Neue Montreal Regular font
+              >
+                +91 98765 43210
+              </p>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Contact Form */}
-      <div className="max-w-4xl mx-auto">
-        <Card className="shadow-lg border-t-4 border-blue-500">
-          <CardHeader className="pb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Send className="h-6 w-6 text-blue-600" />
-              </div>
-              <CardTitle className="text-2xl">Send Us a Message</CardTitle>
-            </div>
-            <p className="text-muted-foreground">
-              Have specific questions about your travel plans? Fill out the form below and we'll get back to you as soon as possible.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-blue-500" />
-                    Full Name
-                  </Label>
-                  <Input id="name" placeholder="Enter your full name" required className="h-12" />
+        {/* Right Side: Contact Form Card */}
+        <div className="md:w-[420px]">
+          <Card className="bg-white shadow-xl rounded-2xl p-6">
+            <CardHeader className="pb-4">
+              <CardTitle 
+                className="text-xl font-bold"
+                style={customFontStyle2} // Applied Travel October font
+              >
+                Tell Us What You Need
+              </CardTitle>
+              <p 
+                className="text-sm text-muted-foreground"
+                style={customFontStyle} // Applied Neue Montreal Regular font
+              >
+                Our team is ready to assist you with every detail, big or small.
+              </p>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              <form className="space-y-4">
+                {/* Name Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Input 
+                    placeholder="First Name" 
+                    className="rounded-full" 
+                    style={customFontStyle} // Applied Neue Montreal Regular font
+                  />
+                  <Input 
+                    placeholder="Last Name" 
+                    className="rounded-full" 
+                    style={customFontStyle} // Applied Neue Montreal Regular font
+                  />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="flex items-center gap-2">
-                    <MailIcon className="h-4 w-4 text-emerald-500" />
-                    Email Address
-                  </Label>
-                  <Input id="email" type="email" placeholder="your@email.com" required className="h-12" />
+
+                {/* Country & Phone */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Input 
+                    placeholder="Country" 
+                    className="rounded-full" 
+                    style={customFontStyle} // Applied Neue Montreal Regular font
+                  />
+                  <Input 
+                    placeholder="Phone Number" 
+                    className="rounded-full" 
+                    style={customFontStyle} // Applied Neue Montreal Regular font
+                  />
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="subject" className="flex items-center gap-2">
-                  <Edit3 className="h-4 w-4 text-amber-500" />
-                  Subject
-                </Label>
-                <Input id="subject" placeholder="How can we help you?" required className="h-12" />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="message" className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4 text-purple-500" />
-                  Your Message
-                </Label>
-                <Textarea 
-                  id="message" 
-                  placeholder="Tell us about your travel plans, questions, or concerns..." 
-                  rows={6} 
-                  required 
-                  className="resize-none"
+
+                {/* Email */}
+                <Input 
+                  placeholder="Email Address" 
+                  className="rounded-full" 
+                  style={customFontStyle} // Applied Neue Montreal Regular font
                 />
-              </div>
-              
-              <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 h-12">
-                <Send className="mr-2 h-5 w-5" />
-                Send Message
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Additional Info */}
-      <div className="mt-12 text-center">
-        <div className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-muted px-4 py-3 rounded-lg">
-          <Smartphone className="h-4 w-4 text-blue-500" />
-          <span>For urgent ferry or activity booking issues, please use live chat or call us directly.</span>
-        </div>
-      </div>
+                {/* Inquiry Type Buttons */}
+                <div>
+                  <Label 
+                    className="block text-sm font-medium mb-2"
+                    style={customFontStyle2} // Applied Travel October font
+                  >
+                    Type of Inquiry
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {["Booking", "General", "Wedding", "Corporate", "Others"].map((type) => (
+                      <Button
+                        key={type}
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full text-xs px-3 py-1"
+                        style={customFontStyle} // Applied Neue Montreal Regular font
+                      >
+                        {type}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
 
-      {/* FAQ Section */}
-      <div className="mt-16 max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="font-semibold mb-2">How quickly do you respond to emails?</h3>
-              <p className="text-muted-foreground text-sm">
-                We aim to respond to all emails within 24 hours during business days. Urgent matters are prioritized.
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="font-semibold mb-2">Do you offer 24/7 customer support?</h3>
-              <p className="text-muted-foreground text-sm">
-                Yes, our phone support is available 24/7. For non-urgent matters, you can email us anytime.
-              </p>
+                {/* Message */}
+                <Textarea
+                  placeholder="Message"
+                  rows={4}
+                  className="rounded-xl resize-none"
+                  style={customFontStyle} // Applied Neue Montreal Regular font
+                />
+
+                {/* Newsletter Checkbox */}
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="newsletter" className="w-4 h-4" />
+                  <label 
+                    htmlFor="newsletter" 
+                    className="text-sm text-muted-foreground"
+                    style={customFontStyle} // Applied Neue Montreal Regular font
+                  >
+                    I'd like to receive exclusive offers and updates
+                  </label>
+                </div>
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  className="w-full rounded-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600"
+                  style={customFontStyle2} // Applied Travel October font
+                >
+                  Submit
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </div>
