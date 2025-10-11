@@ -35,6 +35,53 @@ const customFontStyle2 = {
 };
 
 export default function ContactUs() {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Get form data
+    const firstName = e.target[0].value;
+    const lastName = e.target[1].value;
+    const country = e.target[2].value;
+    const phone = e.target[3].value;
+    const email = e.target[4].value;
+    const inquiryType = Array.from(e.target.elements)
+      .filter(el => el.type === 'button' && el.classList.contains('active'))
+      .map(el => el.textContent)[0] || 'Not specified';
+    const message = e.target[6].value;
+    const newsletter = e.target[7].checked;
+
+    // Format WhatsApp message
+    const whatsappNumber = "9760302690"; // Remove spaces and +91 prefix
+    const messageText = encodeURIComponent(
+      `New Contact Form Submission:\n\n` +
+      `Name: ${firstName} ${lastName}\n` +
+      `Country: ${country}\n` +
+      `Phone: ${phone}\n` +
+      `Email: ${email}\n` +
+      `Inquiry Type: ${inquiryType}\n` +
+      `Message: ${message}\n` +
+      `Newsletter: ${newsletter ? 'Yes' : 'No'}`
+    );
+
+    // Open WhatsApp with pre-filled message
+    window.open(`https://wa.me/${whatsappNumber}?text=${messageText}`, '_blank');
+  };
+
+  // Handle inquiry type selection
+  const handleInquiryTypeClick = (e) => {
+    // Remove active class from all buttons
+    document.querySelectorAll('.inquiry-type-btn').forEach(btn => {
+      btn.classList.remove('active');
+      btn.classList.remove('bg-blue-100', 'text-blue-700');
+      btn.classList.add('border', 'border-gray-200');
+    });
+    
+    // Add active class to clicked button
+    e.target.classList.add('bg-blue-100', 'text-blue-700');
+    e.target.classList.remove('border');
+    e.target.classList.add('active');
+  };
+
   return (
     <div
       className="relative min-h-screen flex pt-[20px] flex-col"
@@ -102,9 +149,9 @@ export default function ContactUs() {
                 style={customFontStyle} // Applied Neue Montreal Regular font
               >
                 <p>Instagram</p>
-                <p>LinkedIn</p>
+               
                 <p>Facebook</p>
-                <p>TikTok</p>
+              
               </div>
             </div>
 
@@ -134,10 +181,10 @@ export default function ContactUs() {
               </h3>
               <p 
                 className="opacity-80"
-                style={customFontStyle} // Applied Neue Montreal Regular font
+                style={customFontStyle} // Applied Neue Montreal Regular font 93321 00369
               >
-                +91 98765 43210
-              </p>
+                +91 97603 02690
+              </p> 
             </div>
           </div>
         </div>
@@ -161,18 +208,20 @@ export default function ContactUs() {
             </CardHeader>
 
             <CardContent className="space-y-6">
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 {/* Name Fields */}
                 <div className="grid grid-cols-2 gap-4">
                   <Input 
                     placeholder="First Name" 
                     className="rounded-full" 
                     style={customFontStyle} // Applied Neue Montreal Regular font
+                    required
                   />
                   <Input 
                     placeholder="Last Name" 
                     className="rounded-full" 
                     style={customFontStyle} // Applied Neue Montreal Regular font
+                    required
                   />
                 </div>
 
@@ -182,11 +231,13 @@ export default function ContactUs() {
                     placeholder="Country" 
                     className="rounded-full" 
                     style={customFontStyle} // Applied Neue Montreal Regular font
+                    required
                   />
                   <Input 
                     placeholder="Phone Number" 
                     className="rounded-full" 
                     style={customFontStyle} // Applied Neue Montreal Regular font
+                    required
                   />
                 </div>
 
@@ -195,6 +246,8 @@ export default function ContactUs() {
                   placeholder="Email Address" 
                   className="rounded-full" 
                   style={customFontStyle} // Applied Neue Montreal Regular font
+                  type="email"
+                  required
                 />
 
                 {/* Inquiry Type Buttons */}
@@ -211,8 +264,10 @@ export default function ContactUs() {
                         key={type}
                         variant="outline"
                         size="sm"
-                        className="rounded-full text-xs px-3 py-1"
+                        className="rounded-full text-xs px-3 py-1 inquiry-type-btn"
                         style={customFontStyle} // Applied Neue Montreal Regular font
+                        type="button"
+                        onClick={handleInquiryTypeClick}
                       >
                         {type}
                       </Button>
@@ -226,6 +281,7 @@ export default function ContactUs() {
                   rows={4}
                   className="rounded-xl resize-none"
                   style={customFontStyle} // Applied Neue Montreal Regular font
+                  required
                 />
 
                 {/* Newsletter Checkbox */}
