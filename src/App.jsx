@@ -83,9 +83,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen bg-gray-100 font-sans">
+     
           <AppContent />
-        </div>
+        
       </AuthProvider>
     </Router>
   );

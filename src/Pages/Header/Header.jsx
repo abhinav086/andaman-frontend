@@ -94,8 +94,8 @@ const Header = () => {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 px-4 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
-      <nav className={`container mx-auto px-4 py-3 mt-4 bg-black/20 backdrop-blur-sm rounded-full flex justify-between items-center transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-50 px-4 transition-all duration-300 overflow-x-hidden ${scrolled ? 'py-2' : 'py-2'}`}>
+      <nav className={`container mx-auto px-4 py-3 mt-2 bg-black/20 backdrop-blur-sm rounded-full flex justify-between items-center transition-all duration-300 ${
         scrolled ? 'bg-black/70 py-2' : 'bg-black/50 py-3'
       }`}>
         <ColoredLogo />

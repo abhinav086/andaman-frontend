@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config/api';
 import bgv from '../../assets/bgv.mp4'; // Background video for header
 import { 
@@ -55,7 +55,7 @@ const TravelIcons = () => (
 
 // --- END: NEW DECORATIVE SVG COMPONENTS ---
 
-// Booking Modal Component
+// Booking Modal Component - FIXED
 const BookingModal = ({ hotel, onClose, onBook }) => {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -63,6 +63,13 @@ const BookingModal = ({ hotel, onClose, onBook }) => {
   const [roomType, setRoomType] = useState('Deluxe Suite');
   const [specialRequests, setSpecialRequests] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   const handleBooking = async () => {
     if (!checkIn || !checkOut) {
@@ -107,8 +114,15 @@ const BookingModal = ({ hotel, onClose, onBook }) => {
   };
 
   return (
-    <div style={customFontStyle} className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+    <div 
+      style={customFontStyle} 
+      className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 animate-fade-in"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold text-blue-900">Book Your Stay</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -319,10 +333,15 @@ const MyBookingsModal = ({ onClose }) => {
   );
 };
 
-// Hotel Card Component - REDESIGNED
+// Hotel Card Component - FIXED
 const HotelCard = ({ hotel, onBook, bookedHotels }) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const isBooked = bookedHotels.some(b => b.hotel_id === hotel.hotel_id);
+
+  const handleBookingClick = (e) => {
+    e.stopPropagation();
+    if (!isBooked) setShowBookingModal(true);
+  };
 
   return (
     <div style={customFontStyle} className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -363,22 +382,21 @@ const HotelCard = ({ hotel, onBook, bookedHotels }) => {
         </div>
         
         <div className="mt-3">
-        <button 
-  className={`w-full py-2 rounded-lg flex items-center justify-center gap-2 font-semibold text-sm transition-all ${
-    isBooked 
-      ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
-      : 'bg-[#221b4d] text-white shadow-lg shadow-zinc-500/30 hover:opacity-90'
-  }`}
-  onClick={() => !isBooked && setShowBookingModal(true)}
-  disabled={isBooked}
->
-  {isBooked ? 'Booked' : 'Book Now'}
-  <Heart 
-    className="text-red-500 fill-red-500" 
-    size={16} 
-  />
-</button>
-
+          <button 
+            className={`w-full py-2 rounded-lg flex items-center justify-center gap-2 font-semibold text-sm transition-all ${
+              isBooked 
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                : 'bg-[#221b4d] text-white shadow-lg shadow-zinc-500/30 hover:opacity-90'
+            }`}
+            onClick={handleBookingClick}
+            disabled={isBooked}
+          >
+            {isBooked ? 'Booked' : 'Book Now'}
+            <Heart 
+              className="text-red-500 fill-red-500" 
+              size={16} 
+            />
+          </button>
         </div>
       </div>
 
@@ -673,4 +691,4 @@ if (loading) {
     </div>
   );
 };
-export default Carousel; 
+export default Carousel;
