@@ -99,7 +99,7 @@ const TravelPromo = () => {
             </p>
 
             {/* Stats Section */}
-            <div className="flex justify-center lg:justify-start gap-8 sm:gap-12">
+            <div style={customFontStyle} className="flex justify-center lg:justify-start gap-8 sm:gap-12">
               <div className="text-left">
                 <p className="text-4xl font-bold text-[#5D3EAF]">10+</p>
                 <p className="text-gray-500 text-sm">Years <br />Experience</p>

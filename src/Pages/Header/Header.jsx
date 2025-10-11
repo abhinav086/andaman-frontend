@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   Plane, Menu, X, Home, Users, Briefcase, Rss, Mail, Shield, LogIn, UserPlus, LogOut,
+  Ticket,
 } from 'lucide-react'; // Import all necessary icons
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '../../assets/logomain.png'; // Ensure you have a logo image in the specified path
@@ -15,6 +16,7 @@ const customFontStyle = {
   fontStyle: "normal",
 };
 
+// Convert to boolean
 // --- Hamburger Icon Component ---
 const HamburgerIcon = ({ isOpen, onClick }) => (
   <button
@@ -63,6 +65,9 @@ const Header = () => {
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+ 
+// user will be null/undefined if not logged in
+const isLogin = !!user; // Convert to boolean
 
   useEffect(() => {
     const handleScroll = () => {
@@ -122,6 +127,15 @@ const Header = () => {
               onClick={handleNavLinkClick}
             />
           ))}
+
+            {isLogin && (
+            <NavLink
+              name="My Bookings"
+              path="/my-bookings"
+              icon={Ticket}
+              onClick={handleNavLinkClick}
+            />
+          )}
           {isAdmin && (
             <NavLink
               name="Admin Panel"

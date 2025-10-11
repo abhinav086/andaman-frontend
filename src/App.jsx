@@ -15,6 +15,9 @@ import Services from "./Pages/Header/Services";
 import Blog from "./Pages/Header/Blog";
 import BlogPost from "./Pages/Header/BlogPost";
 import ContactUs from "./Pages/Header/ContactUs";
+import MyBookings from './Pages/Home/Bookings/MyBookings';
+import ActivityDetail from './Pages/Home/Bookings/ActivityDetails'; 
+import HotelDetails from './Pages/Home/Bookings/HotelDetails';
 
 // Admin Pages/Components
 import AdminPanel from "./admin/AdminPanel";
@@ -25,6 +28,7 @@ import AdminActivities from "./admin/AdminActivities";
 import AdminBlogPage from "./admin/AdminBlogPage";
 import AdminBlog from "./admin/AdminBlog";
 import AdminSettings from "./admin/AdminSettings";
+
 
 function AppContent() {
   const location = useLocation();
@@ -72,6 +76,9 @@ function AppContent() {
           <Route path="/admin-settings" element={<AdminPanel />}>
             <Route index element={<AdminSettings />} />
           </Route>
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/activities/:id" element={<ActivityDetail />} />
+          <Route path="/hotels/:id" element={<HotelDetails />} />
           
         </Routes>
       </main>
