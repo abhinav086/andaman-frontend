@@ -1,4 +1,5 @@
- import React, { useState, useEffect } from 'react';
+// src/Pages/Home/Home2.jsx
+import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config/api';
 import bgv from '../../assets/bgv.mp4'; // Background video for header
 import { 
