@@ -16,6 +16,7 @@ import Activities from "./Activities";
 import worldMap from "../../assets/world-map.png";
 import tourist from "../../assets/island.png";
 import landscape from "../../assets/tourist.jpg";
+import ChatBot from "./Chatbot";
 
 const customFontStyle = {
   fontFamily: "'Neue Montreal Regular', sans-serif",
@@ -224,6 +225,7 @@ const Home = () => {
       <Home2 />
       <Activities />
       <Home3 />
+      <ChatBot />
     </>
   );
 };
