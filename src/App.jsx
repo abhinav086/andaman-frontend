@@ -7,6 +7,10 @@ import { AuthProvider } from './context/AuthContext';
 import Header from './Pages/Header/Header';
 import Footer from './Pages/Footer/Footer';
 import Home from './Pages/Home/Home';
+import Home2 from './Pages/Home/Home2'; // Import Home2
+import Home3 from './Pages/Home/Home3'; // Import Home3
+import ChatBot from './Pages/Home/Chatbot'; // Import ChatBot
+import Activities from './Pages/Home/Activities'; // Import Activities
 import './fonts.css';
 import Login from "./Pages/Login/Login";
 import SignUp from "./Pages/SignUp/Signup";
@@ -28,6 +32,8 @@ import AdminActivities from "./admin/AdminActivities";
 import AdminBlogPage from "./admin/AdminBlogPage";
 import AdminBlog from "./admin/AdminBlog";
 import AdminSettings from "./admin/AdminSettings";
+import PrivacyPolicy from './Pages/Footer/PrivacyPolicy';
+import TermsOfService from './Pages/Footer/TermsOfService';
 
 
 function AppContent() {
@@ -43,6 +49,10 @@ function AppContent() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/home2" element={<Home2 />} />    
+          <Route path="/home3" element={<Home3 />} />      
+          <Route path="/chatbot" element={<ChatBot />} /> 
+          <Route path="/activities" element={<Activities />} /> 
           <Route path="/about" element={<AboutUs />} />
           <Route path="/services" element={<Services />} />
           <Route path="/blog" element={<Blog />} />
@@ -50,6 +60,8 @@ function AppContent() {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path='/termsofservice' element={<TermsOfService/>} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminPanel />}>

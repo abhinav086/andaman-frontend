@@ -113,7 +113,7 @@ const PrivacyPolicy = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pt-[90px]">
       {/* Header Section */}
       <header className="bg-gradient-to-br from-blue-50 to-cyan-50 py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto text-center">
@@ -210,40 +210,7 @@ const PrivacyPolicy = () => {
         </div>
       </main>
 
-      {/* Contact Section */}
-      <section className="bg-gray-50 py-12 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 style={customFontStyle2} className="text-3xl font-bold text-gray-900 mb-4">
-              Have Questions?
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Our team is here to help you understand how we protect your privacy and handle your data.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-              <Mail className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-900 mb-2">Email Us</h3>
-              <p className="text-gray-600">privacy@andamantrip.com</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-              <Phone className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-900 mb-2">Call Us</h3>
-              <p className="text-gray-600">+91 98765 43210</p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-              <MapPin className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-              <h3 className="font-semibold text-gray-900 mb-2">Visit Us</h3>
-              <p className="text-gray-600 text-sm">Main Road, Port Blair<br />Andaman & Nicobar Islands</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
+     
       {/* Footer */}
       <footer style={customFontStyle} className="bg-white pt-8 pb-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
