@@ -34,7 +34,7 @@ const AdminPanel = () => {
     if (path.includes('/admin-activities')) return 'activities';
     if (path.includes('/admin-blogs')) return 'blogs';
     if (path.includes('/admin-blogbooks')) return 'blogbooks';
-    if (path.includes('/admin-settings')) return 'settings';
+    if (path.includes('/')) return 'Main Website';
     if (path === '/admin') return 'dashboard';
     return 'dashboard';
   };
@@ -67,8 +67,8 @@ const AdminPanel = () => {
       case 'blogbooks':
         route = '/admin-blogbooks';
         break;
-      case 'settings':
-        route = '/admin-settings';
+      case 'Main Website':
+        route = '/';
         break;
       default:
         route = '/admin';
@@ -90,12 +90,14 @@ const AdminPanel = () => {
           <nav className="space-y-2">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: BarChart3, route: '/admin' },
+              { id: 'Main Website', label: 'Main Website', icon: Home, route: '/' },
               { id: 'users', label: 'User Management', icon: Users, route: '/admin-users' },
               { id: 'management', label: 'Admin Management', icon: Settings, route: '/admin-management' },
               { id: 'hotels', label: 'Hotels', icon: Building, route: '/admin-hotels' },
               { id: 'activities', label: 'Activities', icon: MapPin, route: '/admin-activities' },
               { id: 'blogs', label: 'Blogs (Posts)', icon: FileText, route: '/admin-blogs' },
               { id: 'blogbooks', label: 'Blog Books', icon: BookOpen, route: '/admin-blogbooks' },
+              
               { id: 'settings', label: 'Settings', icon: Settings, route: '/admin-settings' }
             ].map((item) => (
               <Button
