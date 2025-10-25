@@ -34,6 +34,7 @@ import AdminBlog from "./admin/AdminBlog";
 import AdminSettings from "./admin/AdminSettings";
 import PrivacyPolicy from './Pages/Footer/PrivacyPolicy';
 import TermsOfService from './Pages/Footer/TermsOfService';
+import ImageGallery from './Pages/Header/ImageGallery';
 
 
 function AppContent() {
@@ -56,6 +57,7 @@ function AppContent() {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/services" element={<Services />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/gallery" element={<ImageGallery/>} />
           <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/signup" element={<SignUp />} />

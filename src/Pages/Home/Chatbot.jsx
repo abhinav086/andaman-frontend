@@ -243,7 +243,7 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-[100]">
       {isOpen ? (
         <div className="bg-white rounded-2xl shadow-xl w-full max-w-md h-[500px] flex flex-col border border-gray-200">
           {/* Chat Header */}

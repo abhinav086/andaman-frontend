@@ -1,3 +1,4 @@
+// src/Pages/Footer/Footer.jsx
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -37,18 +38,15 @@ const Footer = () => {
   };
 
   return (
-    // FIXED: Added overflow-x-hidden and overflow-hidden to prevent horizontal scroll
     <footer style={customFontStyle} className="relative bg-white pt-12 pb-32 px-4 md:px-8 lg:px-16 overflow-x-hidden overflow-hidden w-full">
-      {/* FIXED: Added overflow-hidden, max-w-full, and proper centering to background text */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none mt-7 overflow-hidden max-w-full">
         <div className="text-[6rem ]  sm:text-[8rem] md:text-[10rem] font-bold leading-none text-center opacity-8 translate-y-0
                     bg-gradient-to-b from-gray-200 via-gray-100 to-transparent text-transparent bg-clip-text
-                    hidden lg:block whitespace-nowrap px-4"> {/* Added whitespace-nowrap and px-4 */}
+                    hidden lg:block whitespace-nowrap px-4">
           Make Andaman Trip
         </div>
       </div>
 
-      {/* FIXED: Added max-w-7xl and w-full to ensure content stays within bounds */}
       <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-10 border border-gray-100 relative z-10 w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {/* Column 1: Company Info */}
@@ -160,7 +158,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Column 4: Company */}
+          {/* Column 4: Company - Updated */}
           <div className="lg:col-span-1">
             <h3 className="text-sm font-medium mb-4 text-gray-900">Company</h3>
             <ul className="space-y-2">
@@ -172,21 +170,12 @@ const Footer = () => {
                   About
                 </button>
               </li>
-             
               <li>
                 <button 
                   onClick={() => handleNavigate('/contact')} 
                   className="hover:text-blue-600 transition-colors text-xs sm:text-sm text-gray-600 hover:underline cursor-pointer text-left"
                 >
                   Contact
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => handleNavigate('/')} 
-                  className="hover:text-blue-600 transition-colors text-xs sm:text-sm text-gray-600 hover:underline cursor-pointer text-left"
-                >
-                  Partners
                 </button>
               </li>
             </ul>
@@ -199,23 +188,20 @@ const Footer = () => {
               © {new Date().getFullYear()} Andaman Trip. All rights reserved.
             </p>
             <div className="flex flex-wrap gap-3 sm:gap-4">
+              {/* Updated Privacy Policy link */}
               <button 
-                onClick={() => handleNavigate('/')} 
+                onClick={() => handleNavigate('/privacy')} 
                 className="text-xs text-gray-500 hover:text-blue-600 hover:underline cursor-pointer"
               >
                 Privacy Policy
               </button>
+              
+              {/* Updated Terms of Service link */}
               <button 
-                onClick={() => handleNavigate('/')} 
+                onClick={() => handleNavigate('/termsofservice')} 
                 className="text-xs text-gray-500 hover:text-blue-600 hover:underline cursor-pointer"
               >
                 Terms of Service
-              </button>
-              <button 
-                onClick={() => handleNavigate('/')} 
-                className="text-xs text-gray-500 hover:text-blue-600 hover:underline cursor-pointer"
-              >
-                Cookies Settings
               </button>
             </div>
           </div>
