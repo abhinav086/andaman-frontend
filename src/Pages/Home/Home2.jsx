@@ -495,7 +495,7 @@ const Carousel = () => {
   }
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 overflow-hidden">
         {/* Background Decorative Elements */}
         <div className="absolute top-0 left-0 -translate-x-1/3 -translate-y-1/3 opacity-50 z-0">
             <AirplaneIcon />

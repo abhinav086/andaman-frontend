@@ -5,10 +5,54 @@ import { Input } from '@/components/ui/input';
 import { 
   UserPlus,
   Trash2,
-  Search
+  Search,
+  Calendar,
+  Mail,
+  Phone,
+  User,
+  AlertCircle,
+  CheckCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config/api';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from '@/components/ui/dialog';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -80,7 +124,6 @@ const UserManagement = () => {
     setFilteredUsers(result);
   }, [searchFilters, users]);
 
-  // ✅ Changed: Now creates a regular USER
   const handleCreateUser = async (e) => {
     e.preventDefault();
     setError('');
@@ -92,7 +135,6 @@ const UserManagement = () => {
         throw new Error('Not authenticated');
       }
 
-      // ✅ Use regular user registration endpoint
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -122,8 +164,6 @@ const UserManagement = () => {
       setError("You cannot delete your own account.");
       return;
     }
-
-    if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
 
     try {
       const token = getAuthToken();
@@ -157,67 +197,102 @@ const UserManagement = () => {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>View, search, and manage all user accounts</CardDescription>
+              <CardTitle className="text-2xl">User Management</CardTitle>
+              <CardDescription className="mt-1">
+                View, search, and manage all user accounts
+              </CardDescription>
             </div>
-            <Button onClick={() => setShowCreateForm(!showCreateForm)}>
-              <UserPlus className="mr-2 h-4 w-4" /> 
-              {showCreateForm ? 'Cancel' : 'Create User'} {/* ✅ Updated text */}
+            <Button 
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="gap-2"
+            >
+              <UserPlus className="h-4 w-4" /> 
+              {showCreateForm ? 'Cancel' : 'Create User'}
             </Button>
           </div>
         </CardHeader>
 
         {showCreateForm && (
-          <CardContent>
-            <form onSubmit={handleCreateUser} className="space-y-4"> {/* ✅ Updated handler */}
+          <div className="px-6 pb-6">
+            <Separator />
+            <form onSubmit={handleCreateUser} className="space-y-4 mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Full Name</label>
-                  <Input
-                    value={newUserData.full_name}
-                    onChange={(e) => setNewUserData({...newUserData, full_name: e.target.value})}
-                    required
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="full_name">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="full_name"
+                      value={newUserData.full_name}
+                      onChange={(e) => setNewUserData({...newUserData, full_name: e.target.value})}
+                      placeholder="Enter full name"
+                      className="pl-10"
+                      required
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Email</label>
-                  <Input
-                    type="email"
-                    value={newUserData.email}
-                    onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                    required
-                  />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={newUserData.email}
+                      onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                      placeholder="Enter email address"
+                      className="pl-10"
+                      required
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Password</label>
-                  <Input
-                    type="password"
-                    value={newUserData.password}
-                    onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                    required
-                    minLength={6}
-                  />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type="password"
+                      value={newUserData.password}
+                      onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                      placeholder="Enter password"
+                      required
+                      minLength={6}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Phone Number</label>
-                  <Input
-                    value={newUserData.phone_number}
-                    onChange={(e) => setNewUserData({...newUserData, phone_number: e.target.value})}
-                  />
+                
+                <div className="space-y-2">
+                  <Label htmlFor="phone_number">Phone Number</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="phone_number"
+                      value={newUserData.phone_number}
+                      onChange={(e) => setNewUserData({...newUserData, phone_number: e.target.value})}
+                      placeholder="Enter phone number"
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
               </div>
-              <Button type="submit" className="w-full md:w-auto">Create User</Button> {/* ✅ Updated text */}
+              <div className="flex justify-end">
+                <Button type="submit" className="w-full md:w-auto">
+                  Create User
+                </Button>
+              </div>
             </form>
-          </CardContent>
+          </div>
         )}
 
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-3">
+        <CardContent className="pt-6">
+          <div className="flex flex-col md:flex-row gap-3 mb-6">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search by name..."
                 value={searchFilters.full_name}
@@ -225,99 +300,144 @@ const UserManagement = () => {
                 className="pl-10"
               />
             </div>
-            <select
-              value={searchFilters.role}
-              onChange={(e) => setSearchFilters({...searchFilters, role: e.target.value})}
-              className="border rounded-md px-3 py-2 w-full md:w-auto"
-            >
-              <option value="">All Roles</option>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
+            
+           <Select
+  value={searchFilters.role}
+  onValueChange={(value) => setSearchFilters({
+    ...searchFilters, 
+    role: value === 'all' ? '' : value
+  })}
+>
+  <SelectTrigger className="w-full md:w-[180px]">
+    <SelectValue placeholder="Filter by role" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="all">All Roles</SelectItem>
+    <SelectItem value="user">User</SelectItem>
+    <SelectItem value="admin">Admin</SelectItem>
+  </SelectContent>
+</Select>
           </div>
         </CardContent>
       </Card>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
+        <div className="flex items-center gap-2 text-destructive bg-destructive/10 p-4 rounded-lg">
+          <AlertCircle className="h-5 w-5" />
+          <span>{error}</span>
         </div>
       )}
       
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-          {success}
+        <div className="flex items-center gap-2 text-green-700 bg-green-100 p-4 rounded-lg">
+          <CheckCircle className="h-5 w-5" />
+          <span>{success}</span>
         </div>
       )}
 
       <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b bg-gray-50">
-                  <th className="text-left py-3 px-4 font-medium">User</th>
-                  <th className="text-left py-3 px-4 font-medium">Email</th>
-                  <th className="text-left py-3 px-4 font-medium">Phone</th>
-                  <th className="text-left py-3 px-4 font-medium">Role</th>
-                  <th className="text-left py-3 px-4 font-medium">Created</th>
-                  <th className="text-left py-3 px-4 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan="6" className="py-8 text-center">
-                      Loading users...
-                    </td>
-                  </tr>
-                ) : filteredUsers.length === 0 ? (
-                  <tr>
-                    <td colSpan="6" className="py-8 text-center text-gray-500">
-                      No users found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredUsers.map((userItem) => (
-                    <tr key={userItem.user_id} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4">
-                        <div className="font-medium">{userItem.full_name}</div>
-                        <div className="text-sm text-gray-500">ID: {userItem.user_id}</div>
-                      </td>
-                      <td className="py-3 px-4">{userItem.email}</td>
-                      <td className="py-3 px-4">{userItem.phone_number || '—'}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          userItem.role === 'admin' 
-                            ? 'bg-blue-100 text-blue-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {userItem.role}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-gray-500">
-                        {new Date(userItem.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="py-3 px-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>User</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Phone</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="h-24 text-center">
+                  Loading users...
+                </TableCell>
+              </TableRow>
+            ) : filteredUsers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                  No users found
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredUsers.map((userItem) => (
+                <TableRow key={userItem.user_id} className="hover:bg-accent/50">
+                  <TableCell>
+                    <div className="font-medium">{userItem.full_name}</div>
+                    <div className="text-sm text-muted-foreground">ID: {userItem.user_id}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      {userItem.email}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {userItem.phone_number ? (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        {userItem.phone_number}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={userItem.role === 'admin' ? 'default' : 'secondary'}
+                      className="capitalize"
+                    >
+                      {userItem.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      {new Date(userItem.created_at).toLocaleDateString()}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          onClick={() => handleDeleteUser(userItem.user_id)}
                           disabled={userItem.user_id === user?.user_id}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the user account and remove their data from our servers.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleDeleteUser(userItem.user_id)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </Card>
     </div>
   );
 };
 
 export default UserManagement;
+
+
+
