@@ -222,10 +222,13 @@ const Home = () => {
           </section>
         </div>
       </div>
+      <ChatBot />
+      
       <Home2 />
+       
       <Activities />
       <Home3 />
-      <ChatBot />
+      
     </>
   );
 };
