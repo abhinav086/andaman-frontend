@@ -392,7 +392,7 @@ export default function Blog() {
               onClick={fetchBlogBooks}
               style={customFontStyle2}
             >
-              Refresh Content
+              Refresh Contents
             </Button>
           </div>
         </div>
