@@ -80,7 +80,7 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(1);
-  const [roomType, setRoomType] = useState('Deluxe Suite'); // Default to first available type if possible
+  const [roomType, setRoomType] = useState('Standard'); // Default to Standard or first available
   const [specialRequests, setSpecialRequests] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -91,11 +91,12 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
     const checkOutDate = new Date(checkOut);
     const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
     const numNights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    let roomPrice = hotel.base_price; // Default to base price
-    if (hotel.room_types && Array.isArray(hotel.room_types)) {
+    let roomPrice = hotel.base_price || 0; // Default to base_price
+    if (hotel.room_types && Array.isArray(hotel.room_types) && hotel.room_types.length > 0) {
+      // Find the selected room type object
       const selectedRoom = hotel.room_types.find(rt => rt.type === roomType);
-      if (selectedRoom) {
-        roomPrice = selectedRoom.price; // Use price from selected room type
+      if (selectedRoom && typeof selectedRoom.price === 'number') {
+        roomPrice = selectedRoom.price; // Use price from selected room type object
       }
     }
     return roomPrice * numNights;
@@ -124,13 +125,12 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
         },
         body: JSON.stringify({
           hotel_id: hotel.hotel_id,
-          room_type: roomType,
+          room_type: roomType, // Send the room type name
           check_in_date: checkIn,
           check_out_date: checkOut,
           num_guests: guests,
-          total_amount: totalAmount, // Send calculated amount
+          total_amount: totalAmount,
           special_requests: specialRequests,
-          // The backend will calculate room_price, num_nights, etc.
         })
       });
 
@@ -152,8 +152,9 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
 
   // Set default room type if hotel data changes
   useEffect(() => {
-    if (hotel && hotel.room_types && hotel.room_types.length > 0) {
-      setRoomType(hotel.room_types[0].type);
+    if (hotel && hotel.room_types && Array.isArray(hotel.room_types) && hotel.room_types.length > 0) {
+      // Set to the type of the first room type object
+      setRoomType(hotel.room_types[0].type || 'Standard');
     } else if (hotel) {
       setRoomType('Standard'); // Fallback if no room types
     }
@@ -220,9 +221,11 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {hotel.room_types && hotel.room_types.length > 0 ? (
+                {hotel.room_types && Array.isArray(hotel.room_types) && hotel.room_types.length > 0 ? (
                   hotel.room_types.map((rt, index) => (
-                    <SelectItem key={index} value={rt.type}>{rt.type} - ₹{rt.price}</SelectItem>
+                    <SelectItem key={index} value={rt.type}>
+                      {rt.type} - ₹{typeof rt.price === 'number' ? rt.price : 'N/A'}
+                    </SelectItem>
                   ))
                 ) : (
                   <SelectItem value="Standard">Standard</SelectItem>
@@ -249,15 +252,15 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
           <div className="text-sm text-gray-600 space-y-1">
             <div className="flex justify-between">
               <span>Room Type: {roomType}</span>
-              <span>₹{(totalAmount / nights || 0).toFixed(2)}/night</span>
+              <span>₹{typeof totalAmount === 'number' && nights > 0 ? (totalAmount / nights).toFixed(2) : '0.00'}/night</span>
             </div>
             <div className="flex justify-between">
               <span>Nights: {nights}</span>
-              <span>₹{totalAmount.toFixed(2)}</span>
+              <span>₹{typeof totalAmount === 'number' ? totalAmount.toFixed(2) : '0.00'}</span>
             </div>
             <div className="flex justify-between font-bold text-blue-900">
               <span>Total:</span>
-              <span>₹{totalAmount.toFixed(2)}</span>
+              <span>₹{typeof totalAmount === 'number' ? totalAmount.toFixed(2) : '0.00'}</span>
             </div>
           </div>
         </div>
@@ -275,29 +278,33 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
   );
 };
 
-// Hotel Card Component - FIXED to use real data
+// Hotel Card Component - Updated to match API data structure
 const HotelCard = ({ hotel, onBook, bookedHotels }) => {
   const [showBookingSheet, setShowBookingSheet] = useState(false);
   const navigate = useNavigate();
 
   const isBooked = bookedHotels.some(b => b.hotel_id === hotel.hotel_id);
 
-  // Determine the price to display (use base price or first room type price)
-  const displayPrice = (hotel.room_types && hotel.room_types.length > 0)
+  // Determine the price to display (prefer room_types[0].price if available, otherwise base_price)
+  const displayPrice = (hotel.room_types && Array.isArray(hotel.room_types) && hotel.room_types.length > 0 && typeof hotel.room_types[0].price === 'number')
     ? hotel.room_types[0].price
-    : hotel.base_price || 0;
+    : hotel.base_price || 0; // Fallback to base_price or 0
+
+  // Determine the rating to display (prefer star_rating, otherwise use a default)
+  const displayRating = typeof hotel.star_rating === 'number' ? hotel.star_rating : 'N/A';
 
   return (
     <Card className="group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <div className="relative">
         <img
-          src={hotel.photos && hotel.photos.length > 0 ? hotel.photos[0] : 'https://placehold.co/400x200?text=No+Image'}
+          src={hotel.photos && Array.isArray(hotel.photos) && hotel.photos.length > 0 ? hotel.photos[0] : 'https://placehold.co/400x200?text=No+Image'}
           alt={hotel.name}
           className="w-full h-40 object-cover rounded-t-xl transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => { e.target.src = 'https://placehold.co/400x200?text=Image+Error'; }}
         />
         <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center text-xs font-semibold text-gray-800">
           <StarIcon className="text-yellow-500 mr-1" size={12} fill="currentColor" />
-          <span>{hotel.average_rating || hotel.rating || 4.8}</span>
+          <span>{displayRating}</span>
         </div>
         <div className="absolute top-2 right-2 bg-black/50 text-white rounded-lg px-2.5 py-1 text-xs font-bold">
           ₹{displayPrice}
@@ -308,20 +315,18 @@ const HotelCard = ({ hotel, onBook, bookedHotels }) => {
       </div>
       <CardContent className="p-3">
         <h3 className="font-bold text-base text-gray-800 truncate">{hotel.name}</h3>
-        <p> ₹{displayPrice}</p>
         <p className="text-gray-500 text-xs flex items-center mt-1">
           <MapPinIcon className="mr-1 h-3 w-3" />
-          
           {hotel.city}, {hotel.country}
         </p>
         <div className="flex items-center mt-2 text-gray-600 text-xs">
           <span className="flex items-center mr-3">
             <HomeIcon className="mr-1 h-3 w-3 text-blue-500" />
-            {hotel.type || 'Hotel'}
+            {hotel.type || 'Hotel'} {/* Assuming 'type' might exist, fallback to 'Hotel' */}
           </span>
           <span className="flex items-center">
             <StarIcon className="mr-1 h-3 w-3 text-blue-500" />
-            {hotel.star_rating || 'N/A'} Stars
+            {displayRating} Stars
           </span>
         </div>
         <div className="mt-3 flex flex-col gap-2">
@@ -404,32 +409,41 @@ const Carousel = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setApiError(''); // Clear previous errors
       try {
         const token = localStorage.getItem('accessToken');
-        const headers = { 'Authorization': `Bearer ${token}` };
+        if (!token) {
+            throw new Error('No access token found. Please login again.');
+        }
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json' // Explicitly set for GET
+        };
 
         const [hotelsRes, bookingsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/hotels`, { headers }),
           fetch(`${API_BASE_URL}/api/bookings/hotel/`, { headers })
         ]);
 
-        if (hotelsRes.ok) {
-          const result = await hotelsRes.json();
-          setHotels(result.hotels || []);
-        } else {
-          console.error('Failed to fetch hotels');
-          setApiError('Failed to load amazing places for you.');
+        if (!hotelsRes.ok) {
+          const errorData = await hotelsRes.json();
+          throw new Error(errorData.msg || 'Failed to fetch hotels');
         }
+        const hotelsData = await hotelsRes.json();
+        setHotels(hotelsData.hotels || []);
 
-        if (bookingsRes.ok) {
-          const data = await bookingsRes.json();
-          setBookedHotels(data.bookings || []);
+        if (!bookingsRes.ok) {
+          const errorData = await bookingsRes.json();
+          console.error('Failed to fetch bookings:', errorData.msg || 'Unknown error');
+          // Don't throw here, just log, as it's less critical for the main hotel list
+          setBookedHotels([]); // Set to empty array if fetching fails
         } else {
-          console.error('Failed to fetch bookings');
+          const bookingsData = await bookingsRes.json();
+          setBookedHotels(bookingsData.bookings || []);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
-        setApiError('Network error occurred. Please check your connection.');
+        setApiError(error.message || 'Network error occurred. Please check your connection.');
       } finally {
         setLoading(false);
       }
@@ -447,11 +461,14 @@ const Carousel = () => {
   const filteredHotels = hotels.filter(hotel => {
     const [minPrice, maxPrice] = filters.priceRange;
     // Use the display price logic from HotelCard
-    const price = (hotel.room_types && hotel.room_types.length > 0)
+    const price = (hotel.room_types && Array.isArray(hotel.room_types) && hotel.room_types.length > 0 && typeof hotel.room_types[0].price === 'number')
         ? hotel.room_types[0].price
         : hotel.base_price || 0;
-    return price >= parseInt(minPrice) && price <= parseInt(maxPrice) &&
-          (filters.propertyType.length === 0 || filters.propertyType.includes(hotel.type || 'Hotel'));
+
+    const priceMatch = price >= parseInt(minPrice) && price <= parseInt(maxPrice);
+    const propertyTypeMatch = filters.propertyType.length === 0 || filters.propertyType.includes(hotel.type || 'Hotel');
+
+    return priceMatch && propertyTypeMatch;
   });
 
   const indexOfLastHotel = currentPage * hotelsPerPage;
@@ -545,7 +562,6 @@ const Carousel = () => {
             </div>
           )}
 
-       
           <CategoryTabs activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
           <div className="flex flex-col lg:flex-row gap-8">
