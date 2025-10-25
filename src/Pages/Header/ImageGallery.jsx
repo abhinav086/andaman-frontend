@@ -158,7 +158,7 @@ const ImageGallery = () => {
             <button
               onClick={nextImage}
               className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 p-2 rounded-full transition-all z-10"
-              aria-label="Next image"
+              aria-label="Next image "
             >
               <ChevronRight className="w-5 h-5" />
             </button>
