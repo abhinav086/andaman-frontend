@@ -19,6 +19,8 @@ import MyBookings from './Pages/Home/Bookings/MyBookings';
 import ActivityDetail from './Pages/Home/Bookings/ActivityDetails'; 
 import HotelDetails from './Pages/Home/Bookings/HotelDetails';
 
+
+
 // Admin Pages/Components
 import AdminPanel from "./admin/AdminPanel";
 import Hotels from "./admin/Hotels";
@@ -26,8 +28,11 @@ import AdminManagement from "./admin/AdminManagement";
 import UserManagement from "./admin/UserManagement";
 import AdminActivities from "./admin/AdminActivities";
 import AdminBlogPage from "./admin/AdminBlogPage";
+import Ferry from "./admin/Ferry";
 import AdminBlog from "./admin/AdminBlog";
 import AdminSettings from "./admin/AdminSettings";
+import FerryManagement from "./admin/FerryBookings";
+
 
 
 function AppContent() {
@@ -73,8 +78,14 @@ function AppContent() {
           <Route path="/admin-blogbooks" element={<AdminPanel />}>
             <Route index element={<AdminBlog />} />
           </Route>
+          <Route path="/admin-ferries" element={<AdminPanel />}>
+            <Route index element={<Ferry />} />
+          </Route>
           <Route path="/admin-settings" element={<AdminPanel />}>
             <Route index element={<AdminSettings />} />
+          </Route>
+          <Route path="/admin-ferry-bookings" element={<AdminPanel />}>
+            <Route index element={<FerryManagement />} />
           </Route>
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/activities/:id" element={<ActivityDetail />} />

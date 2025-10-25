@@ -116,7 +116,7 @@ export default function AboutUs() {
                 <div className="mx-auto w-16 h-16 bg-[#F1F0FE] rounded-full flex items-center justify-center mb-4">
                   <item.icon className="text-[#6355B5] text-2xl" />
                 </div>
-                <h3 style={customFontStyle2} className="text-xl font-bold mb-2">{item.title}</h3>
+                <h3 style={customFontStyle} className="text-xl font-bold mb-2">{item.title}</h3>
                 <p style={customFontStyle} className="text-muted-foreground">{item.desc}</p>
               </CardContent>
             </Card>
@@ -149,7 +149,7 @@ export default function AboutUs() {
                 <FaUser className="text-gray-500 text-3xl" />
               </div>
               <div className="mt-4">
-                <blockquote style={customFontStyle2} className="text-xl font-medium max-w-3xl mx-auto mb-4 leading-relaxed">
+                <blockquote style={customFontStyle} className="text-xl font-medium max-w-3xl mx-auto mb-4 leading-relaxed">
                   "{current.quote}"
                 </blockquote>
                 <p style={customFontStyle} className="text-muted-foreground font-medium">- {current.author}</p>
@@ -192,7 +192,7 @@ export default function AboutUs() {
                   />
                 </div>
                 <p style={customFontStyle} className="text-sm text-muted-foreground mb-2">{trip.date}</p>
-                <h3 style={customFontStyle2} className="text-xl font-semibold group-hover:text-[#6355B5] transition-colors">
+                <h3 style={customFontStyle} className="text-xl font-semibold group-hover:text-[#6355B5] transition-colors">
                   {trip.title}
                 </h3>
               </div>

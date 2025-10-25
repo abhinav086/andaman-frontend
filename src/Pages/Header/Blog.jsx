@@ -192,10 +192,10 @@ export default function Blog() {
       {/* Page Title & Description */}
       <div className="container mx-auto px-4 mb-6">
         <h1 
-          className="text-3xl font-bold mb-2"
+          className="text-4xl font-bold mb-2"
           style={customFontStyle2}
         >
-          Blog
+          Blogs
         </h1>
         <p 
           className="text-muted-foreground max-w-3xl"
@@ -221,7 +221,7 @@ export default function Blog() {
                       ? 'bg-blue-100 text-blue-700 border border-blue-300'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
-                  style={customFontStyle2}
+                  style={customFontStyle}
                 >
                   {category.name}
                 </button>
@@ -292,7 +292,7 @@ export default function Blog() {
                 <CardHeader className="pb-3">
                   <CardTitle 
                     className="text-xl line-clamp-2"
-                    style={customFontStyle2}
+                    style={customFontStyle}
                   >
                     {book.title}
                   </CardTitle>
@@ -300,7 +300,7 @@ export default function Blog() {
 
                 <CardContent>
                   <p 
-                    className="text-muted-foreground mb-4 line-clamp-2"
+                    className="text-muted-foreground mb-4 text-sm line-clamp-2"
                     style={customFontStyle}
                   >
                     {book.description}
@@ -330,11 +330,11 @@ export default function Blog() {
                   >
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Eye className="h-4 w-4 text-emerald-500" />
-                      <span>{book.views_count.toLocaleString()}</span>
+                     
                     </div>
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Heart className="h-4 w-4 text-rose-500" />
-                      <span>{book.likes_count.toLocaleString()}</span>
+                    
                     </div>
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
@@ -398,33 +398,7 @@ export default function Blog() {
         </div>
       )}
 
-      {/* CTA Section */}
-      <div 
-        className="container mx-auto px-4 mt-16 text-center"
-        style={customFontStyle}
-      >
-        <div className="inline-block p-6 bg-gradient-to-r from-blue-50 to-teal-50 rounded-xl border border-blue-100 max-w-2xl">
-          <h3 
-            className="text-xl font-bold mb-3"
-            style={customFontStyle2}
-          >
-            Share Your Travel Stories
-          </h3>
-          <p 
-            className="text-muted-foreground mb-6"
-            style={customFontStyle}
-          >
-            Have an amazing travel experience to share? Contribute to our community of storytellers.
-          </p>
-          <Button 
-            size="lg"
-            style={customFontStyle2}
-          >
-            <Camera className="mr-2 h-5 w-5" />
-            Submit Your Story
-          </Button>
-        </div>
-      </div>
+     
     </div>
   );
 }

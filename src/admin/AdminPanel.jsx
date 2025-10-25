@@ -1,9 +1,14 @@
-// src/admin/AdminPanel.jsx (Updated)
-import React, { useState } from 'react';
-import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import React, { useState, useEffect } from "react";
+import { Outlet, useNavigate, useLocation, Link } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Users,
   Package,
@@ -16,9 +21,19 @@ import {
   LogOut,
   Menu,
   X,
-  Home
-} from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+  Home,
+  ChevronRight,
+  Activity,
+  Calendar,
+  Ship,
+  DollarSign,
+  TrendingUp,
+} from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const AdminPanel = () => {
   const { user, logout } = useAuth();
@@ -28,127 +43,259 @@ const AdminPanel = () => {
   // Determine active tab based on the current route path
   const getActiveTabFromPath = () => {
     const path = location.pathname;
-    if (path.includes('/admin-management')) return 'management';
-    if (path.includes('/admin-users')) return 'users';
-    if (path.includes('/admin-hotels')) return 'hotels';
-    if (path.includes('/admin-activities')) return 'activities';
-    if (path.includes('/admin-blogs')) return 'blogs';
-    if (path.includes('/admin-blogbooks')) return 'blogbooks';
-    if (path.includes('/')) return 'Main Website';
-    if (path === '/admin') return 'dashboard';
-    return 'dashboard';
+    if (path.includes("/admin-management")) return "management";
+    if (path.includes("/admin-users")) return "users";
+    if (path.includes("/admin-hotels")) return "hotels";
+    if (path.includes("/admin-activities")) return "activities";
+    if (path.includes("/admin-blogs")) return "blogs";
+    if (path.includes("/admin-ferries")) return "ferries"; // Correctly maps /admin-ferries to 'ferries'
+    if (path.includes("/ferry-bookings")) return "bookings"; // Changed from 'ferry-bookings' to 'bookings' for consistency
+    if (path.includes("/admin-blogbooks")) return "blogbooks";
+    if (path === "/admin") return "dashboard";
+    // Note: "/" (Main Website) is handled differently and not part of the admin tabs
+    return "dashboard";
   };
 
   const [activeTab, setActiveTab] = useState(getActiveTabFromPath());
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  React.useEffect(() => {
-     setActiveTab(getActiveTabFromPath());
+  useEffect(() => {
+    setActiveTab(getActiveTabFromPath());
   }, [location.pathname]);
 
   const handleTabChange = (tabId) => {
-    let route = '/admin';
+    let route = "/admin";
     switch (tabId) {
-      case 'management':
-        route = '/admin-management';
+      case "management":
+        route = "/admin-management";
         break;
-      case 'users':
-        route = '/admin-users';
+      case "users":
+        route = "/admin-users";
         break;
-      case 'hotels':
-        route = '/admin-hotels';
+      case "hotels":
+        route = "/admin-hotels";
         break;
-      case 'activities':
-        route = '/admin-activities';
+      case "activities":
+        route = "/admin-activities";
         break;
-      case 'blogs':
-        route = '/admin-blogs';
+      case "blogs":
+        route = "/admin-blogs";
         break;
-      case 'blogbooks':
-        route = '/admin-blogbooks';
+      case "ferries": // Now correctly handles the 'ferries' tab
+        route = "/admin-ferries";
         break;
-      case 'Main Website':
-        route = '/';
+      case "bookings": // Handles the 'bookings' tab
+        route = "/admin-ferry-bookings";
         break;
+      case "blogbooks":
+        route = "/admin-blogbooks";
+        break;
+      case "Main Website": // Handles navigation to main website
+        navigate("/"); // Navigate directly, don't set active tab to "Main Website" here
+        setSidebarOpen(false);
+        return; // Exit early to prevent state updates
       default:
-        route = '/admin';
+        route = "/admin"; // Default to dashboard
     }
-    setActiveTab(tabId);
-    navigate(route);
-    setSidebarOpen(false);
+    setActiveTab(tabId); // Update active tab state
+    navigate(route); // Navigate to the determined route
+    setSidebarOpen(false); // Close sidebar on mobile after selection
   };
 
+  const sidebarItems = [
+    { id: "dashboard", label: "Dashboard", icon: BarChart3, route: "/admin" },
+    { id: "Main Website", label: "Main Website", icon: Home, route: "/" },
+    {
+      id: "users",
+      label: "User Management",
+      icon: Users,
+      route: "/admin-users",
+    },
+    {
+      id: "management",
+      label: "Admin Management",
+      icon: Settings,
+      route: "/admin-management",
+    },
+     {
+      id: "bookings", // Changed id to match the path segment and tab logic
+      label: "Ferry Bookings",
+      icon: Calendar,
+      route: "/admin-ferry-bookings",
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+      route: "/admin-settings",
+    },
+    { id: "hotels", label: "Hotels", icon: Building, route: "/admin-hotels" },
+    {
+      id: "activities",
+      label: "Activities",
+      icon: MapPin,
+      route: "/admin-activities",
+    },
+    {
+      id: "blogs",
+      label: "Blogs (Posts)",
+      icon: FileText,
+      route: "/admin-blogs",
+    },
+    {
+      id: "blogbooks",
+      label: "Blog Books",
+      icon: BookOpen,
+      route: "/admin-blogbooks",
+    },
+    {
+      id: "ferries",
+      label: "Ferry Management",
+      icon: Ship,
+      route: "/admin-ferries",
+    },
+   
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0`}>
-        <div className="p-4 border-b">
-          <h2 className="text-xl font-bold">Admin Panel</h2>
-          <p className="text-sm text-gray-500">Hello, {user?.full_name || user?.email}</p>
-        </div>
-        <div className="p-4">
-          <nav className="space-y-2">
-            {[
-              { id: 'dashboard', label: 'Dashboard', icon: BarChart3, route: '/admin' },
-              { id: 'Main Website', label: 'Main Website', icon: Home, route: '/' },
-              { id: 'users', label: 'User Management', icon: Users, route: '/admin-users' },
-              { id: 'management', label: 'Admin Management', icon: Settings, route: '/admin-management' },
-              { id: 'hotels', label: 'Hotels', icon: Building, route: '/admin-hotels' },
-              { id: 'activities', label: 'Activities', icon: MapPin, route: '/admin-activities' },
-              { id: 'blogs', label: 'Blogs (Posts)', icon: FileText, route: '/admin-blogs' },
-              { id: 'blogbooks', label: 'Blog Books', icon: BookOpen, route: '/admin-blogbooks' },
-              
-              { id: 'settings', label: 'Settings', icon: Settings, route: '/admin-settings' }
-            ].map((item) => (
-              <Button
-                key={item.id}
-                variant={activeTab === item.id ? "secondary" : "ghost"}
-                className={`w-full justify-start ${
-                  activeTab === item.id ? "bg-gray-200" : ""
-                }`}
-                onClick={() => handleTabChange(item.id)}
-              >
-                <item.icon className="mr-2 h-4 w-4" />
-                {item.label}
-              </Button>
-            ))}
-            <Button
-              className="w-full justify-start mt-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
-              onClick={() => {
-                navigate('/');
-              }}
-            >
-              <Home className="mr-2 h-4 w-4" />
-              Home
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={() => {
-                logout();
-                navigate('/login');
-              }}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
-          </nav>
-        </div>
+    <div className="flex h-screen bg-muted/40">
+      {/* Mobile Sidebar Sheet */}
+      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SheetTrigger asChild className="md:hidden fixed top-4 left-4 z-50">
+          <Button variant="outline" size="icon">
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-64 p-0">
+          <SidebarContent
+            activeTab={activeTab}
+            handleTabChange={handleTabChange}
+            sidebarItems={sidebarItems}
+            user={user}
+            logout={logout}
+            navigate={navigate}
+          />
+        </SheetContent>
+      </Sheet>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex md:w-64 md:flex-col">
+        <SidebarContent
+          activeTab={activeTab}
+          handleTabChange={handleTabChange}
+          sidebarItems={sidebarItems}
+          user={user}
+          logout={logout}
+          navigate={navigate}
+        />
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1">
-        <div className="p-4 md:p-8">
-          <div className="md:hidden mb-4">
-            <Button variant="outline" onClick={() => setSidebarOpen(!sidebarOpen)}>
-              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              {sidebarOpen ? 'Close Menu' : 'Open Menu'}
-            </Button>
+      {/* Main Content */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <header className="flex h-16 items-center gap-4 border-b bg-card px-6">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold capitalize">
+              {activeTab === "Main Website"
+                ? "Main Website"
+                : activeTab.replace("-", " ")}
+            </h1>
           </div>
-          <div className="max-w-7xl mx-auto">
-            <div>
-              <Outlet />
+          <div className="ml-auto flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage
+                  src="/placeholder-avatar.jpg"
+                  alt={user?.full_name || user?.email}
+                />
+                <AvatarFallback>
+                  {user?.full_name?.charAt(0) || user?.email?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="hidden sm:inline-block text-sm font-medium">
+                {user?.full_name || user?.email}
+              </span>
             </div>
+          </div>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 md:p-6 overflow-y-auto">
+          <div className="max-w-7xl w-full mx-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+// Sidebar Content Component
+const SidebarContent = ({
+  activeTab,
+  handleTabChange,
+  sidebarItems,
+  user,
+  logout,
+  navigate,
+}) => {
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex h-16 items-center border-b px-4">
+        <Link to="/admin" className="flex items-center gap-2 font-semibold">
+          <BarChart3 className="h-6 w-6" />
+          <span>Admin Panel</span>
+        </Link>
+      </div>
+      <ScrollArea className="flex-1">
+        <div className="space-y-2 p-2">
+          {sidebarItems.map((item) => (
+            <Button
+              key={item.id}
+              variant={activeTab === item.id ? "secondary" : "ghost"}
+              className={`w-full justify-start ${
+                activeTab === item.id
+                  ? "font-semibold border-r-2 border-primary"
+                  : "font-normal"
+              }`}
+              onClick={() => handleTabChange(item.id)}
+            >
+              <item.icon className="mr-2 h-4 w-4" />
+              {item.label}
+              {activeTab === item.id && (
+                <ChevronRight className="ml-auto h-4 w-4" />
+              )}
+            </Button>
+          ))}
+        </div>
+        <Separator className="my-4" />
+        <div className="space-y-2 p-2">
+          <Button
+            variant="outline"
+            className="w-full justify-start"
+            onClick={() => {
+              logout();
+              navigate("/login");
+            }}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
+      </ScrollArea>
+      <div className="border-t p-4">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-9 w-9">
+            <AvatarImage
+              src="/placeholder-avatar.jpg"
+              alt={user?.full_name || user?.email}
+            />
+            <AvatarFallback>
+              {user?.full_name?.charAt(0) || user?.email?.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold">
+              {user?.full_name || user?.email}
+            </span>
+            <span className="truncate text-xs">Administrator</span>
           </div>
         </div>
       </div>
@@ -161,66 +308,134 @@ AdminPanel.DashboardContent = () => {
   const { user } = useAuth();
 
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm opacity-80">Total Users</p>
-                <p className="text-3xl font-bold">0</p>
-              </div>
-              <Users className="h-12 w-12 opacity-80" />
-            </div>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
+        <p className="text-muted-foreground">
+          Welcome back, {user?.full_name || user?.email}. Here's what's
+          happening today.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className="h-5 w-5 opacity-80" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1,234</div>
+            <p className="text-xs opacity-80">+12% from last month</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm opacity-80">Active Users</p>
-                <p className="text-3xl font-bold">0</p>
-              </div>
-              <Users className="h-12 w-12 opacity-80" />
-            </div>
+        <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <Activity className="h-5 w-5 opacity-80" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">847</div>
+            <p className="text-xs opacity-80">+8% from last month</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm opacity-80">Admins</p>
-                <p className="text-3xl font-bold">0</p>
-              </div>
-              <Settings className="h-12 w-12 opacity-80" />
-            </div>
+        <Card className="bg-gradient-to-br from-violet-500 to-violet-600 text-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Admins</CardTitle>
+            <Settings className="h-5 w-5 opacity-80" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">24</div>
+            <p className="text-xs opacity-80">+2 from last month</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm opacity-80">Suspended</p>
-                <p className="text-3xl font-bold">0</p>
-              </div>
-              <Package className="h-12 w-12 opacity-80" />
-            </div>
+        <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Suspended</CardTitle>
+            <Package className="h-5 w-5 opacity-80" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">5</div>
+            <p className="text-xs opacity-80">-1 from last month</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Overview</CardTitle>
-          <CardDescription>Welcome to the admin dashboard. Select a section from the sidebar to manage.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Select an item from the left sidebar to get started.</p>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Overview</CardTitle>
+            <CardDescription>
+              Summary of your platform's performance
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Total Revenue</span>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">$24,890</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Bookings This Month</span>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">1,234</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Conversion Rate</span>
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">4.8%</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+            <CardDescription>Latest actions on your platform</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="bg-primary/10 p-2 rounded-full">
+                  <Users className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">New user registered</p>
+                  <p className="text-xs text-muted-foreground">2 minutes ago</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="bg-primary/10 p-2 rounded-full">
+                  <Building className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">New hotel added</p>
+                  <p className="text-xs text-muted-foreground">1 hour ago</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="bg-primary/10 p-2 rounded-full">
+                  <FileText className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">New blog post published</p>
+                  <p className="text-xs text-muted-foreground">3 hours ago</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
