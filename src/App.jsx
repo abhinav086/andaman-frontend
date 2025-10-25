@@ -22,6 +22,7 @@ import ContactUs from "./Pages/Header/ContactUs";
 import MyBookings from './Pages/Home/Bookings/MyBookings';
 import ActivityDetail from './Pages/Home/Bookings/ActivityDetails'; 
 import HotelDetails from './Pages/Home/Bookings/HotelDetails';
+import FerryBooking from './admin/FerryBookings';
 
 
 
@@ -35,7 +36,7 @@ import AdminBlogPage from "./admin/AdminBlogPage";
 import Ferry from "./admin/Ferry";
 import AdminBlog from "./admin/AdminBlog";
 import AdminSettings from "./admin/AdminSettings";
-import PrivacyPolicy from './Pages/Footer/PrivacyPolicy';
+import FerryManagement from "./admin/Ferry";
 import TermsOfService from './Pages/Footer/TermsOfService';
 
 
@@ -63,7 +64,7 @@ function AppContent() {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
+       
           <Route path='/termsofservice' element={<TermsOfService/>} />
 
           {/* Admin Routes */}
@@ -95,7 +96,7 @@ function AppContent() {
             <Route index element={<AdminSettings />} />
           </Route>
           <Route path="/admin-ferry-bookings" element={<AdminPanel />}>
-            <Route index element={<FerryManagement />} />
+            <Route index element={<FerryBooking />} />
           </Route>
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/activities/:id" element={<ActivityDetail />} />

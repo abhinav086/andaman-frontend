@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 import axios from 'axios';
 
-const API_BASE_URL = 'https://makeandman.onrender.com';
+const API_BASE_URL = 'http://localhost:5000';
 
 const AdminBlog = () => {
   const { token: authToken, user } = useAuth();

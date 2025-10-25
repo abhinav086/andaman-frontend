@@ -1,3 +1,4 @@
+
 // src/Pages/Home/Home2.jsx
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../config/api';
@@ -80,22 +81,24 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(1);
-  const [roomType, setRoomType] = useState('Deluxe Suite'); // Default to first available type if possible
+  const [roomType, setRoomType] = useState(''); // Default to empty string initially
   const [specialRequests, setSpecialRequests] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Calculate price based on selected room type and dates
   const calculateTotalAmount = () => {
-    if (!checkIn || !checkOut) return 0;
+    if (!checkIn || !checkOut || !roomType) return 0; // Need roomType for price
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
     const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
     const numNights = Math.ceil(timeDiff / (1000 * 3600 * 24));
     let roomPrice = hotel.base_price; // Default to base price
     if (hotel.room_types && Array.isArray(hotel.room_types)) {
-      const selectedRoom = hotel.room_types.find(rt => rt.type === roomType);
-      if (selectedRoom) {
-        roomPrice = selectedRoom.price; // Use price from selected room type
+      const selectedRoom = hotel.room_types.find(rt => rt.type.toLowerCase() === roomType.toLowerCase());
+      if (selectedRoom && selectedRoom.price) { // Check if price exists in room_type object
+        roomPrice = parseFloat(selectedRoom.price);
+      } else if (selectedRoom && !selectedRoom.price) { // If no specific price in room_type, use base_price
+        roomPrice = parseFloat(hotel.base_price);
       }
     }
     return roomPrice * numNights;
@@ -139,23 +142,25 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
         onBook(data.booking);
         setIsOpen(false); // Close the sheet on success
       } else {
-        const error = await response.json();
-        alert(`Booking failed: ${error.msg || 'Unknown error'}`);
+        const errorData = await response.json();
+        console.error('Booking Error Response:', errorData); // Log for debugging
+        alert(`Booking failed: ${errorData.msg || 'Unknown error occurred'}`);
       }
     } catch (error) {
       console.error('Booking error:', error);
-      alert('Network error occurred');
+      alert('Network error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Set default room type if hotel data changes
+  // Set default room type if hotel data changes and room types are available
   useEffect(() => {
     if (hotel && hotel.room_types && hotel.room_types.length > 0) {
       setRoomType(hotel.room_types[0].type);
     } else if (hotel) {
-      setRoomType('Standard'); // Fallback if no room types
+      // Fallback if no room types - maybe use a default string or disable booking
+      setRoomType('Standard'); // Or handle differently if no types
     }
   }, [hotel]);
 
@@ -169,6 +174,18 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
   };
 
   const nights = calculateNights();
+
+  // Determine price for the selected room type for display in summary
+  const getSelectedRoomPricePerNight = () => {
+    if (!roomType) return 0;
+    if (hotel.room_types && Array.isArray(hotel.room_types)) {
+      const selectedRoom = hotel.room_types.find(rt => rt.type.toLowerCase() === roomType.toLowerCase());
+      if (selectedRoom && selectedRoom.price) {
+        return parseFloat(selectedRoom.price);
+      }
+    }
+    return parseFloat(hotel.base_price); // Fallback to base price
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -222,7 +239,8 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
               <SelectContent>
                 {hotel.room_types && hotel.room_types.length > 0 ? (
                   hotel.room_types.map((rt, index) => (
-                    <SelectItem key={index} value={rt.type}>{rt.type} - ₹{rt.price}</SelectItem>
+                    // Use rt.price if available, otherwise hotel.base_price for display only
+                    <SelectItem key={index} value={rt.type}>{rt.type} - ₹{rt.price || hotel.base_price}</SelectItem>
                   ))
                 ) : (
                   <SelectItem value="Standard">Standard</SelectItem>
@@ -249,7 +267,7 @@ const BookingSheet = ({ hotel, onBook, isOpen, setIsOpen }) => {
           <div className="text-sm text-gray-600 space-y-1">
             <div className="flex justify-between">
               <span>Room Type: {roomType}</span>
-              <span>₹{(totalAmount / nights || 0).toFixed(2)}/night</span>
+              <span>₹{getSelectedRoomPricePerNight().toFixed(2)}/night</span>
             </div>
             <div className="flex justify-between">
               <span>Nights: {nights}</span>
@@ -282,10 +300,10 @@ const HotelCard = ({ hotel, onBook, bookedHotels }) => {
 
   const isBooked = bookedHotels.some(b => b.hotel_id === hotel.hotel_id);
 
-  // Determine the price to display (use base price or first room type price)
-  const displayPrice = (hotel.room_types && hotel.room_types.length > 0)
-    ? hotel.room_types[0].price
-    : hotel.base_price || 0;
+  // Determine the price to display (use base price or first room type price if available)
+  // Note: This logic might need adjustment if you want to show the *lowest* price or a specific price.
+  // For now, it shows the base_price, which seems to be the standard price.
+  const displayPrice = parseFloat(hotel.base_price);
 
   return (
     <Card className="group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -297,10 +315,10 @@ const HotelCard = ({ hotel, onBook, bookedHotels }) => {
         />
         <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center text-xs font-semibold text-gray-800">
           <StarIcon className="text-yellow-500 mr-1" size={12} fill="currentColor" />
-          <span>{hotel.average_rating || hotel.rating || 4.8}</span>
+          <span>{hotel.average_rating || '0.0'}</span> {/* Use average_rating from API */}
         </div>
         <div className="absolute top-2 right-2 bg-black/50 text-white rounded-lg px-2.5 py-1 text-xs font-bold">
-          ₹{displayPrice}
+          ₹{displayPrice.toFixed(2)} {/* Show base price */}
         </div>
         <button className="absolute top-8 right-2 bg-white/90 backdrop-blur-sm rounded-full p-2 transition-all opacity-0 group-hover:opacity-100 group-hover:top-2">
           <Heart className="text-gray-600 hover:text-red-500 hover:fill-red-500 transition-colors" size={16} />
@@ -308,16 +326,15 @@ const HotelCard = ({ hotel, onBook, bookedHotels }) => {
       </div>
       <CardContent className="p-3">
         <h3 className="font-bold text-base text-gray-800 truncate">{hotel.name}</h3>
-        <p> ₹{displayPrice}</p>
+        <p className="text-sm text-gray-600">From ₹{displayPrice.toFixed(2)} / night</p> {/* Indicate this is the base price */}
         <p className="text-gray-500 text-xs flex items-center mt-1">
           <MapPinIcon className="mr-1 h-3 w-3" />
-          
           {hotel.city}, {hotel.country}
         </p>
         <div className="flex items-center mt-2 text-gray-600 text-xs">
           <span className="flex items-center mr-3">
             <HomeIcon className="mr-1 h-3 w-3 text-blue-500" />
-            {hotel.type || 'Hotel'}
+            Hotel {/* Assuming type is always 'Hotel' or similar */}
           </span>
           <span className="flex items-center">
             <StarIcon className="mr-1 h-3 w-3 text-blue-500" />
@@ -365,7 +382,7 @@ const CategoryTabs = ({ activeCategory, setActiveCategory }) => {
   ];
 
   return (
-    <div className="flex overflow-x-auto pb-4 mb-6 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 hide-scrollbar">
+    <div className="flex overflow-x-auto pb-4 mb-6 px-4 sm:px-6 lg:px-8 hide-scrollbar">
       {categories.map((category) => (
         <button
           key={category}
@@ -399,61 +416,78 @@ const Carousel = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const hotelsPerPage = 8;
+  const hotelsPerPage = 8; // Adjust as needed
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setApiError(''); // Reset error on new fetch
       try {
         const token = localStorage.getItem('accessToken');
+        if (!token) {
+            throw new Error('Access token not found. Please log in.');
+        }
         const headers = { 'Authorization': `Bearer ${token}` };
 
         const [hotelsRes, bookingsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/hotels`, { headers }),
+          fetch(`${API_BASE_URL}/api/hotels`, { headers }), // Use the correct endpoint
           fetch(`${API_BASE_URL}/api/bookings/hotel/`, { headers })
         ]);
 
         if (hotelsRes.ok) {
           const result = await hotelsRes.json();
-          setHotels(result.hotels || []);
+          setHotels(result.hotels || []); // Access the 'hotels' array from the response
         } else {
-          console.error('Failed to fetch hotels');
-          setApiError('Failed to load amazing places for you.');
+          console.error('Failed to fetch hotels:', hotelsRes.status, hotelsRes.statusText);
+          const errorText = await hotelsRes.text(); // Get error details if possible
+          console.error('Error details:', errorText);
+          setApiError(`Failed to load hotels: ${hotelsRes.status} ${hotelsRes.statusText} - ${errorText}`);
         }
 
         if (bookingsRes.ok) {
           const data = await bookingsRes.json();
-          setBookedHotels(data.bookings || []);
+          setBookedHotels(data.bookings || []); // Access the 'bookings' array from the response
         } else {
-          console.error('Failed to fetch bookings');
+          console.error('Failed to fetch bookings:', bookingsRes.status, bookingsRes.statusText);
+          const errorText = await bookingsRes.text();
+          console.error('Booking error details:', errorText);
+          // Optionally set an error for bookings, but maybe don't block the hotel display
+          // setApiError(`Failed to load bookings: ${bookingsRes.status} ${bookingsRes.statusText}`);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
-        setApiError('Network error occurred. Please check your connection.');
+        setApiError(`Network error occurred: ${error.message || 'Please check your connection.'}`);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, []); // Empty dependency array means this runs once on mount
 
   const handleBooking = (booking) => {
     setBookingSuccess(booking);
+    // Add the new booking to the bookedHotels state to update UI immediately
     setBookedHotels(prev => [...prev, booking]);
-    setTimeout(() => setBookingSuccess(null), 5000);
+    setTimeout(() => setBookingSuccess(null), 5000); // Clear success message after 5 seconds
   };
 
+  // Apply filters to hotels
   const filteredHotels = hotels.filter(hotel => {
-    const [minPrice, maxPrice] = filters.priceRange;
-    // Use the display price logic from HotelCard
-    const price = (hotel.room_types && hotel.room_types.length > 0)
-        ? hotel.room_types[0].price
-        : hotel.base_price || 0;
-    return price >= parseInt(minPrice) && price <= parseInt(maxPrice) &&
-          (filters.propertyType.length === 0 || filters.propertyType.includes(hotel.type || 'Hotel'));
+    const [minPrice, maxPrice] = filters.priceRange.map(p => parseInt(p, 10));
+    const hotelPrice = parseFloat(hotel.base_price); // Use base_price for filtering
+
+    // Price filter
+    const isPriceInRange = hotelPrice >= minPrice && hotelPrice <= maxPrice;
+
+    // Property type filter (if applicable, based on your API/hotel schema)
+    // Example: const isPropertyTypeMatch = filters.propertyType.length === 0 || filters.propertyType.includes(hotel.type || 'Hotel');
+
+    // Combine filters (currently only price filter is active)
+    return isPriceInRange; // && isPropertyTypeMatch;
   });
 
+  // Pagination logic
   const indexOfLastHotel = currentPage * hotelsPerPage;
   const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
   const currentHotels = filteredHotels.slice(indexOfFirstHotel, indexOfLastHotel);
@@ -545,7 +579,6 @@ const Carousel = () => {
             </div>
           )}
 
-       
           <CategoryTabs activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
           <div className="flex flex-col lg:flex-row gap-8">
@@ -554,6 +587,33 @@ const Carousel = () => {
                 <p className="text-gray-600 font-medium">
                   {filteredHotels.length} stays found
                 </p>
+                {/* Optional: Add a sort/filter button for mobile */}
+                <Sheet open={isMobileFiltersOpen} onOpenChange={setIsMobileFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" className="lg:hidden">
+                      <Filter className="h-4 w-4 mr-2" /> Filters
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Filters</SheetTitle>
+                      <SheetDescription>Adjust your search criteria.</SheetDescription>
+                    </SheetHeader>
+                    {/* Add your filter controls here later */}
+                    <div className="py-4">
+                        <p>Price Range: ₹{filters.priceRange[0]} - ₹{filters.priceRange[1]}</p>
+                        <Input
+                            type="range"
+                            min="0"
+                            max="10000"
+                            step="100"
+                            value={filters.priceRange[1]}
+                            onChange={(e) => setFilters({...filters, priceRange: ['0', e.target.value]})}
+                            className="w-full mt-2"
+                        />
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
 
               {currentHotels.length === 0 ? (
@@ -566,7 +626,7 @@ const Carousel = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                   {currentHotels.map((hotel) => (
                     <HotelCard
-                      key={hotel.hotel_id}
+                      key={hotel.hotel_id} // Use hotel_id as the unique key
                       hotel={hotel}
                       onBook={handleBooking}
                       bookedHotels={bookedHotels}

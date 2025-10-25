@@ -49,7 +49,7 @@ const AdminPanel = () => {
     if (path.includes("/admin-activities")) return "activities";
     if (path.includes("/admin-blogs")) return "blogs";
     if (path.includes("/admin-ferries")) return "ferries"; // Correctly maps /admin-ferries to 'ferries'
-    if (path.includes("/ferry-bookings")) return "bookings"; // Changed from 'ferry-bookings' to 'bookings' for consistency
+    if (path.includes("/admin-ferry-bookings")) return "bookings"; // Changed from 'ferry-bookings' to 'bookings' for consistency
     if (path.includes("/admin-blogbooks")) return "blogbooks";
     if (path === "/admin") return "dashboard";
     // Note: "/" (Main Website) is handled differently and not part of the admin tabs

@@ -23,7 +23,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-const API_BASE_URL = 'https://makeandman.onrender.com';
+const API_BASE_URL = 'http://localhost:5000';
 
 // Custom font styles
 const customFontStyle = {

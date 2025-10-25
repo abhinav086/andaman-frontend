@@ -37,19 +37,22 @@ const Footer = () => {
   };
 
   return (
-    // FIXED: Added overflow-x-hidden and overflow-hidden to prevent horizontal scroll
-    <footer style={customFontStyle} className="relative bg-white pt-12 pb-32 px-4 md:px-8 lg:px-16 overflow-x-hidden overflow-hidden w-full">
-      {/* FIXED: Added overflow-hidden, max-w-full, and proper centering to background text */}
-      <div className="absolute bottom-0 left-0 right-0 pointer-events-none mt-7 overflow-hidden max-w-full">
-        <div className="text-[6rem ]  sm:text-[8rem] md:text-[10rem] font-bold leading-none text-center opacity-8 translate-y-0
+    <footer 
+      style={customFontStyle} 
+      className="relative bg-white pt-12 pb-32 px-4 md:px-8 lg:px-16 w-full"
+    >
+      {/* Background text - Fixed to prevent horizontal overflow */}
+      <div className="absolute bottom-0 left-0 right-0 pointer-events-none mt-7 overflow-hidden w-full">
+        <div className="text-[6rem] sm:text-[8rem] md:text-[10rem] font-bold leading-none text-center opacity-8 translate-y-0
                     bg-gradient-to-b from-gray-200 via-gray-100 to-transparent text-transparent bg-clip-text
-                    hidden lg:block whitespace-nowrap px-4"> {/* Added whitespace-nowrap and px-4 */}
+                    hidden lg:block w-full px-4"
+             style={{ maxWidth: '100%', wordBreak: 'keep-all', whiteSpace: 'nowrap' }}>
           Make Andaman Trip
         </div>
       </div>
 
-      {/* FIXED: Added max-w-7xl and w-full to ensure content stays within bounds */}
-      <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-10 border border-gray-100 relative z-10 w-full">
+      {/* Main content container - Fixed width constraints */}
+      <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-10 border border-gray-100 relative z-10 w-full" style={{ maxWidth: '100%' }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {/* Column 1: Company Info */}
           <div className="lg:col-span-1">
@@ -172,7 +175,6 @@ const Footer = () => {
                   About
                 </button>
               </li>
-             
               <li>
                 <button 
                   onClick={() => handleNavigate('/contact')} 

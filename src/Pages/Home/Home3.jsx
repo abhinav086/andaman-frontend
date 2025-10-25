@@ -30,7 +30,7 @@ const customFontStyle2 = {
   fontStyle: "normal",
 };
 const TravelPromo = () => {
-  // Image URL - replace with your own asset
+  // Image URL - replace with your own asseta
   const travelerImageUrl = 'https://images.wallpapersden.com/image/download/guy-mountains-travel_amhrZ2WUmZqaraWkpJRmbmdlrWZnZWU.jpg'; // Replace with your image path
 
   return (

@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Calendar, User, ArrowLeft, BookOpen, Loader2 } from "lucide-react";
 import axios from 'axios';
 
-const API_BASE_URL = 'https://makeandman.onrender.com'; // Fixed: removed extra spaces
+const API_BASE_URL = 'http://localhost:5000'; // Fixed: removed extra spaces
 
 export default function BlogPost() {
   const { id } = useParams(); // This is actually the slug from URL
